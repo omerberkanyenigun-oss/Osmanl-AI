@@ -1,0 +1,1846 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <script>
+  // V29.1: Önceki sürümlerden kalan service worker ve önbellekleri erkenden temizle.
+  (function(){
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations()
+        .then(function(regs){ return Promise.all(regs.map(function(reg){ return reg.unregister(); })); })
+        .catch(function(){});
+    }
+    if ("caches" in window) {
+      caches.keys()
+        .then(function(keys){ return Promise.all(keys.map(function(key){ return caches.delete(key); })); })
+        .catch(function(){});
+    }
+  })();
+  </script>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=25">
+  <link rel="shortcut icon" href="/favicon.ico?v=25">
+  <link rel="apple-touch-icon" href="/app-icon.png?v=25">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070b14">
+  <meta name="description" content="36 Osmanlı padişahını Teachable Machine ile tanıyan etkileşimli tarih platformu.">
+  <title>Osmanlı AI ULTIMATE</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/style.css?v=31-theme-tour-fix">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.5/dist/teachablemachine-image.min.js"></script>
+  <link rel="stylesheet" href="/palace-chat.css?v=26">
+
+  <style>.nav-3d-game{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}.nav-3d-game:hover{filter:brightness(1.15)}</style>
+</head>
+<body>
+  <div id="nexusIntro" class="nexus-intro" aria-hidden="true">
+    <div class="nexus-intro-ring"></div>
+    <img src="/assets/osmanli-armasi.webp" alt="Osmanlı arması">
+    <b>OSMANLI AI</b><span>INFINITY NEXUS</span>
+  </div>
+  <div id="nexusParticles" class="nexus-particles" aria-hidden="true"></div>
+
+  <div id="imperialIntro" class="imperial-intro">
+    <div class="intro-fog fog-a"></div>
+    <div class="intro-fog fog-b"></div>
+    <div class="intro-flag">
+      <div class="flag-pole"></div>
+      <div class="flag-cloth"><span>☾</span></div>
+    </div>
+    <div class="intro-content">
+      <div class="intro-emblem-wrap"><img class="intro-emblem" src="/assets/osmanli-armasi.webp" alt="Osmanlı arması"></div>
+      <span class="kicker">YAPAY ZEKÂ DESTEKLİ TARİH PLATFORMU</span>
+      <h1>OSMANLI AI</h1>
+      <div class="intro-year">1299</div>
+      <p>Kuruluştan imparatorluğa, tarihin kapıları açılıyor.</p>
+      <button id="enterImperialApp" class="primary intro-enter">İmparatorluk Kapısını Aç</button>
+    </div>
+  </div>
+
+  <div id="cinematicIntro" class="cinematic-intro">
+    <div class="intro-stars"></div>
+    <div class="intro-seal">☾</div>
+    <div class="intro-year intro-feature-count">150+ ÖZELLİK</div>
+    <h1>OSMANLI AI</h1>
+    <p class="intro-tagline">YAPAY ZEKÂ • TARİH • 3D OYUN</p>
+    <button id="skipIntro" class="secondary">Girişi Atla</button>
+  </div>
+  <div class="noise"></div><div class="orb orb-a"></div><div class="orb orb-b"></div>
+  <header class="topbar glass">
+    <button class="brand" data-page="dashboard" aria-label="Ana sayfa">
+      <span class="brand-seal">☾</span>
+      <span><b>OSMANLI AI</b><small>ULTIMATE • 36 Padişah • AI Identity Core</small></span>
+    </button>
+    <div class="top-actions">
+      <button id="juryModeButton" class="jury-button">✨ En İlgi Çekici Özellikler</button>
+      <button id="globalSearchButton" class="ghost">⌕ Akıllı Arama</button>
+      <select id="languageSelect" class="language-select"><option value="tr">TR</option><option value="en">EN</option></select>
+      <button id="themeButton" class="round" aria-label="Tema değiştir">☾</button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar glass">
+      <nav id="mainNav">
+        <button class="nav active" data-page="dashboard">⌂ <span>Kontrol Paneli</span></button>
+        <button class="nav" data-page="recognition">◉ <span>AI Tanıma</span></button>
+        <button class="nav" data-page="encyclopedia">⌘ <span>Ansiklopedi</span></button>
+        <button class="nav" data-page="timeline">◷ <span>Zaman Çizelgesi</span></button>
+        <button class="nav" data-page="ottomanmap">🗺 <span>Osmanlı Haritası</span></button>
+        <button class="nav" data-page="dynasty">♔ <span>Hanedan Ağacı</span></button>
+        <button class="nav" data-page="compare">≋ <span>Karşılaştır</span></button>
+        <button class="nav" data-page="quiz">? <span>Bilgi Arenası</span></button>
+        <button class="nav" data-page="glossary">A <span>Tarih Sözlüğü</span></button>
+        <button class="nav" data-page="modelcenter">◇ <span>Model Merkezi</span></button>
+        <button class="nav" data-page="history">▦ <span>Analiz Geçmişi</span></button>
+        <button class="nav" data-page="chat">✦ <span>Padişahla Konuş</span></button>
+        <button class="nav" data-page="games">⚔ <span>Osmanlı Oyunları</span></button>
+        <a class="nav nav-3d-game" href="/3d-sefer.html">🎮 <span>3D Fetih Oyunu</span></a>
+        <button class="nav" data-page="conquestsim">🏰 <span>Fetih Simülatörü</span></button>
+        <button class="nav" data-page="museum">◫ <span>Dijital Müze</span></button>
+        <button class="nav" data-page="achievements">★ <span>Başarılar</span></button>
+        <button class="nav" data-page="advisor">⚑ <span>Osmanlı Danışmanı</span></button>
+        <button class="nav" data-page="stats">▥ <span>İstatistikler</span></button>
+        <button class="nav" data-page="palace">🏛 <span>Saray Rehberi</span></button>
+        <button class="nav" data-page="ferman">📜 <span>Ferman Yazıcısı</span></button>
+        <button class="nav" data-page="gallery">🕌 <span>Eserler Galerisi</span></button>
+        <button class="nav" data-page="story">📖 <span>Hikâye Modu</span></button>
+        <button class="nav" data-page="daily">☀ <span>Günün Görevi</span></button>
+        <button class="nav" data-page="voice">🎙 <span>Sesli Padişah</span></button>
+        <button class="nav" data-page="teacher">🤖 <span>AI Öğretmen</span></button>
+        <button class="nav" data-page="map">🗺 <span>Fetih Haritası</span></button>
+        <button class="nav" data-page="timegate">🕰 <span>Zaman Kapısı</span></button>
+        <button class="nav" data-page="tv">📻 <span>Osmanlı Radyo Merkezi</span></button>
+        <button class="nav" data-page="museum3d">🏛 <span>3D Müze</span></button>
+        <button class="nav" data-page="treasury">💎 <span>Hazine Odası</span></button>
+        <button class="nav" data-page="escaperoom">🔐 <span>Osmanlı Escape Room</span></button>
+        <button class="nav" data-page="achievements">🏆 <span>Başarı Sistemi</span></button>
+        <button class="nav" data-page="historyanalysis">🧠 <span>Yapay Zekâ Tarih Analizi</span></button>
+        <button class="nav" data-page="battletactics">♟ <span>Savaş Taktiği</span></button>
+        <button class="nav" data-page="dailymissions">📅 <span>Günlük Görevler</span></button>
+        <button class="nav" data-page="mypalace">🏰 <span>Sarayım</span></button>
+        <button class="nav" data-page="aicommander"><i class="nav-commander-icon">AI</i> <span>Yapay Zekâ Komutan</span></button>
+        <button class="nav nexus-nav" data-page="infinityhub">♾️ <span>Infinity Nexus</span><b>V31</b></button>
+        <button class="nav v29-nav" data-page="ottomanimage">🎨 <span>Osmanlı Resim AI</span><b>V29</b></button>
+        <button class="nav v29-nav" data-page="ottomannews">📰 <span>Osmanlıca Haber</span><b>V29</b></button>
+        <button class="nav v28-nav" data-page="camerahistory">📷 <span>Kamera ile Tarih</span><b>V28</b></button>
+        <button class="nav v28-nav" data-page="cinematicai">🎬 <span>AI Sinematik</span><b>V28</b></button>
+        <button class="nav v27-nav" data-page="historydebate">🗣️ <span>Tarih Tartışması</span><b>V27</b></button>
+        <button class="nav v27-nav" data-page="detective">🕵️ <span>Tarih Dedektifi</span><b>V27</b></button>
+        <button class="nav v22-nav" data-page="warsimulator">⚔️ <span>Savaş Simülatörü</span><b>V22</b></button>
+        <button class="nav v22-nav" data-page="imperialdivan">👑 <span>Divan-ı Hümayun</span><b>V22</b></button>
+        <button class="nav v23-nav" data-page="palacewalk">🏰 <span>Sarayda Serbest Gezi</span><b>V23</b></button>
+        <button class="nav v23-nav" data-page="weaponmuseum">🗡️ <span>Silah Müzesi</span><b>V23</b></button>
+      </nav>
+      <div id="modelStatusCard" class="model-status ready">
+        <i id="modelDot"></i>
+        <div class="model-status-copy">
+          <b id="modelStatus">ULTIMATE hazır</b>
+          <small id="modelStatusDetail">Tüm özellikler kullanıma hazır</small>
+          <div class="model-load-progress"><i id="modelLoadProgress" style="width:100%"></i></div>
+          <button id="modelRetryButton" class="model-retry hidden" type="button">Yeniden Dene</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="dashboard" class="page active">
+        <div class="hero">
+          <div>
+            <span class="kicker">GEÇMİŞİ YAPAY ZEKÂYLA KEŞFET</span>
+            <h1>Bir portreden<br><em>623 yıllık tarihe.</em></h1>
+            <p>36 padişahı tanıyan model, kapsamlı ansiklopedi, dinamik hanedan ağacı, karşılaştırma laboratuvarı ve oyunlaştırılmış öğrenme deneyimi.</p>
+            <div class="hero-actions">
+              <button class="primary" data-jump="recognition">Portre Tanı</button>
+              <button class="secondary" data-jump="encyclopedia">36 Padişahı Keşfet</button>
+            </div>
+          </div>
+          <div class="hero-emblem"><span>36</span><small>PADİŞAH</small></div>
+        </div>
+
+        <div class="selection-showcase">
+          <article class="welcome-showcase glass">
+            <div>
+              <span class="kicker">YAPAY ZEKÂ DESTEKLİ DİJİTAL TARİH PLATFORMU</span>
+              <h2>Hoş geldiniz, Osmanlı AI INFINITY PRO</h2>
+              <p>36 padişahı tanıyın, tarihî kişiliklerle eğitimsel sohbet edin, oyunlarla öğrenin ve dijital müzeyi keşfedin.</p>
+            </div>
+            <button class="primary" data-jump="recognition">Keşfetmeye Başla</button>
+          </article>
+          <article class="daily-fact-card glass">
+            <span class="kicker">GÜNÜN TARİH BİLGİSİ</span>
+            <h3 id="dailyHistoryTitle">Tarih yükleniyor...</h3>
+            <p id="dailyHistoryFact"></p>
+          </article>
+          <article class="version-card glass">
+            <span class="version-badge">v4.0</span>
+            <b>Seçme Sürümü</b>
+            <small id="systemCheckText">Sistem kontrol ediliyor...</small>
+          </article>
+        </div>
+
+        <section class="timegate-teaser glass">
+          <div><span class="kicker">DÖNEMLER ARASI YOLCULUK</span><h2>Zaman Kapısını Aç</h2>
+          <p>1299, 1512, 1520 veya 1876 dönemlerinden birine geç. Tema, padişah, radyo ve tarih içeriği birlikte değişsin.</p></div>
+          <button class="primary" data-jump="timegate">🕰 Zaman Kapısına Git</button>
+        </section>
+
+        <div class="stats">
+          <article class="stat glass"><b>1299–1922</b><span>Osmanlı zaman aralığı</span></article>
+          <article class="stat glass"><b id="classCount">36</b><span>Model sınıfı</span></article>
+          <article class="stat glass"><b id="analysisCount">0</b><span>Toplam analiz</span></article>
+          <article class="stat glass"><b id="bestQuiz">0</b><span>En iyi test puanı</span></article>
+        </div>
+
+        <section class="simulator-teaser glass">
+          <div>
+            <span class="kicker">YENİ STRATEJİ OYUNU</span>
+            <h2>İstanbul'un Fethini Yönet</h2>
+            <p>Rumeli Hisarı'ndan son hücuma kadar beş aşamalı fetih simülasyonunu tamamla.</p>
+          </div>
+          <button class="primary" data-jump="conquestsim">⚔ Simülasyonu Başlat</button>
+        </section>
+
+        <section class="map-teaser glass">
+          <div>
+            <span class="kicker">1299–1922</span>
+            <h2>Osmanlı'nın Büyüyüşünü Haritada İzle</h2>
+            <p>Zaman çizgisini hareket ettir; şehirlerin, fetihlerin ve dönemlerin haritada canlandığını gör.</p>
+          </div>
+          <button class="primary" data-jump="ottomanmap">🗺 Haritayı Aç</button>
+        </section>
+
+        <div class="dashboard-grid">
+          <article class="feature glass">
+            <span class="feature-icon">◉</span><h3>Güven Analizli Tanıma</h3>
+            <p>Sadece bir isim değil; ilk üç tahmin, güven yüzdesi ve belirsizlik uyarısı.</p>
+          </article>
+          <article class="feature glass">
+            <span class="feature-icon">♔</span><h3>Gerçek Hanedan Bağları</h3>
+            <p>Baba-oğul ve kardeş ilişkilerini gösteren etkileşimli SVG soy ağacı.</p>
+          </article>
+          <article class="feature glass">
+            <span class="feature-icon">⌘</span><h3>Akıllı Ansiklopedi</h3>
+            <p>İsim, savaş, dönem veya reform yazarak 36 padişah arasında anında ara.</p>
+          </article>
+        </div>
+
+        <section class="section-block">
+          <div class="section-title"><div><span class="kicker">OYUN MERKEZİ</span><h2>Üç oyun hemen hazır</h2></div></div>
+          <div class="dashboard-game-grid">
+            <button class="dashboard-game-card glass" data-jump="games" data-open-game="conquest"><b>⚔ Fetih Stratejisi</b><span>Doğru askerî kararları ver.</span></button>
+            <button class="dashboard-game-card glass" data-jump="games" data-open-game="guess"><b>♔ Kim Bu Padişah?</b><span>İpuçlarından hükümdarı bul.</span></button>
+            <button class="dashboard-game-card glass" data-jump="games" data-open-game="order"><b>◷ Taht Sırasını Diz</b><span>Padişahları kronolojik sırala.</span></button>
+          </div>
+        </section>
+
+        <section class="section-block">
+          <div class="section-title"><div><span class="kicker">KARİYER SİSTEMİ</span><h2>Osmanlı rütbeni yükselt</h2></div></div>
+          <article class="career-card glass">
+            <div class="career-rank"><span id="rankIcon">🛡️</span><div><small>MEVCUT RÜTBE</small><h3 id="rankName">Acemi</h3></div></div>
+            <div class="career-progress"><div class="career-progress-head"><span id="xpText">0 XP</span><span id="nextRankText">Sonraki: Yeniçeri (100 XP)</span></div><div class="xp-track"><i id="xpFill"></i></div></div>
+            <div id="characterSummary" class="character-summary"><p>Henüz karakter oluşturulmadı.</p></div>
+            <button id="openCharacterCreator" class="primary" type="button">👤 Karakter Oluştur</button>
+            <div id="rankList" class="rank-list"></div>
+          </article>
+        </section>
+
+        <section class="section-block">
+          <div class="section-title"><div><span class="kicker">DÖNEMLER</span><h2>Altı yüzyıllık yolculuk</h2></div></div>
+          <div id="eraStrip" class="era-strip"></div>
+        </section>
+      </section>
+
+      <section id="recognition" class="page">
+        <div class="page-head">
+          <span class="kicker">AI IDENTITY CORE</span>
+          <h2>Bu padişah kim?</h2>
+          <p>Görsel yükle veya kamerayı kullan. Sistem 36 sınıf arasından kim olduğunu, güven oranını ve en yakın alternatifleri gösterir.</p>
+        </div>
+
+        <div class="recognition-toolbar glass">
+          <button class="mode-button active" data-mode="upload">↥ Dosya Yükle</button>
+          <button class="mode-button" data-mode="camera">◉ Kamera</button>
+          <div class="recognition-hint">En iyi sonuç: tek kişi, net yüz, sade arka plan.</div>
+        </div>
+
+        <div class="recognition-grid">
+          <article class="upload-panel glass">
+            <div id="uploadMode">
+              <div id="dropZone" class="drop-zone" tabindex="0">
+                <input id="fileInput" type="file" accept="image/*" hidden>
+                <span class="upload-symbol">↥</span>
+                <h3>Portreyi buraya bırak</h3>
+                <p>PNG, JPG veya WEBP</p>
+                <button id="pickButton" class="primary">Görsel Seç</button>
+              </div>
+              <div id="previewBox" class="preview-box hidden">
+                <img id="previewImage" alt="Yüklenen padişah portresi">
+                <div class="preview-actions">
+                  <button id="changeButton" class="secondary">Değiştir</button>
+                  <button id="analyzeButton" class="primary" disabled>Kim Olduğunu Bul</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="cameraMode" class="camera-mode hidden">
+              <video id="cameraVideo" autoplay playsinline muted></video>
+              <canvas id="cameraCanvas" class="hidden"></canvas>
+              <div class="preview-actions">
+                <button id="startCameraButton" class="secondary">Kamerayı Aç</button>
+                <button id="captureButton" class="primary" disabled>Fotoğraf Çek ve Tanı</button>
+                <button id="stopCameraButton" class="secondary" disabled>Kapat</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="result-panel glass">
+            <div id="identityIdle" class="identity-idle">
+              <span class="identity-question">?</span>
+              <h3>Kim olduğunu bulmaya hazır</h3>
+              <p>Bir portre seçtiğinde yapay zekâ 36 padişah arasından karşılaştırma yapacak.</p>
+            </div>
+
+            <div id="identityReveal" class="identity-reveal hidden">
+              <span class="kicker">TANINAN PADİŞAH</span>
+              <h3 id="resultName">Analiz bekleniyor</h3>
+              <div class="identity-meta">
+                <div id="confidenceRing" class="confidence-ring"><b>—</b><small>GÜVEN</small></div>
+                <div>
+                  <strong id="confidenceLevel">—</strong>
+                  <small id="modelDecision">Model kararı bekleniyor</small>
+                </div>
+              </div>
+              <div id="uncertaintyNotice" class="notice hidden"></div>
+              <div id="predictionList" class="predictions"><p class="muted">Tahminler burada görünecek.</p></div>
+            </div>
+          </article>
+        </div>
+
+        <article id="recognizedProfile" class="profile-view glass hidden"></article>
+      </section>
+
+      <section id="encyclopedia" class="page">
+        <div class="page-head"><span class="kicker">OSMANLI ANSİKLOPEDİSİ</span><h2>36 Padişah, tek merkez</h2><p>İsim, dönem, savaş veya reform ile filtrele.</p></div>
+        <div class="search-bar glass"><input id="encyclopediaSearch" placeholder="Örnek: İstanbul, Nizam-ı Cedid, Mohaç, Abdülhamid..."><select id="eraFilter"><option value="">Tüm dönemler</option></select></div>
+        <div id="encyclopediaGrid" class="card-grid"></div>
+        <article id="encyclopediaDetail" class="profile-view glass hidden"></article>
+      </section>
+
+      <section id="ottomanmap" class="page">
+        <div class="page-head">
+          <span class="kicker">İNTERAKTİF TARİH HARİTASI</span>
+          <h2>Osmanlı Haritası</h2>
+          <p>1299'dan 1922'ye uzanan tarih çizgisinde Osmanlı'nın genişlemesini ve önemli dönüm noktalarını keşfet.</p>
+        </div>
+
+        <article class="map-shell glass">
+          <div class="map-toolbar">
+            <button id="mapTourPlay" class="primary">▶ Osmanlı'nın Yükselişini İzle</button>
+            <button id="mapTourPause" class="secondary">⏸ Duraklat</button>
+            <button id="mapTourReset" class="secondary">↺ Başa Dön</button>
+            <label class="map-speed-label">Hız
+              <select id="mapTourSpeed">
+                <option value="1500">Yavaş</option>
+                <option value="900" selected>Normal</option>
+                <option value="500">Hızlı</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="map-main-layout">
+            <div class="map-canvas-wrap">
+              <div id="ottomanMapCanvas" class="ottoman-map-canvas">
+                <div class="map-grid-lines"></div>
+                <div class="map-land map-anatolia"></div>
+                <div class="map-land map-balkans"></div>
+                <div class="map-land map-middleeast"></div>
+                <div class="map-land map-egypt"></div>
+                <div class="map-land map-northafrica"></div>
+
+                <div id="empireArea" class="empire-area"></div>
+
+                <button class="historic-city" data-city="Söğüt" data-year="1299" style="left:43%;top:47%"><span></span>Söğüt</button>
+                <button class="historic-city" data-city="Bursa" data-year="1326" style="left:39%;top:43%"><span></span>Bursa</button>
+                <button class="historic-city" data-city="Edirne" data-year="1361" style="left:29%;top:35%"><span></span>Edirne</button>
+                <button class="historic-city" data-city="İstanbul" data-year="1453" style="left:43%;top:34%"><span></span>İstanbul</button>
+                <button class="historic-city" data-city="Trabzon" data-year="1461" style="left:71%;top:39%"><span></span>Trabzon</button>
+                <button class="historic-city" data-city="Kahire" data-year="1517" style="left:53%;top:79%"><span></span>Kahire</button>
+                <button class="historic-city" data-city="Belgrad" data-year="1521" style="left:24%;top:27%"><span></span>Belgrad</button>
+                <button class="historic-city" data-city="Rodos" data-year="1522" style="left:44%;top:63%"><span></span>Rodos</button>
+                <button class="historic-city" data-city="Mohaç" data-year="1526" style="left:19%;top:24%"><span></span>Mohaç</button>
+                <button class="historic-city" data-city="Bağdat" data-year="1534" style="left:81%;top:66%"><span></span>Bağdat</button>
+                <button class="historic-city" data-city="Preveze" data-year="1538" style="left:25%;top:49%"><span></span>Preveze</button>
+                <button class="historic-city" data-city="Viyana" data-year="1683" style="left:12%;top:16%"><span></span>Viyana</button>
+
+                <div class="map-water-label black-sea">KARADENİZ</div>
+                <div class="map-water-label mediterranean">AKDENİZ</div>
+                <div class="map-compass">N<br>↑</div>
+
+                <div id="mapFlash" class="map-flash"></div>
+                <div id="mapFlag" class="map-flag"><span>☾</span></div>
+              </div>
+            </div>
+
+            <aside class="map-info-panel glass">
+              <span class="kicker">SEÇİLİ YIL</span>
+              <div id="mapYearBig" class="map-year-big">1299</div>
+              <h3 id="mapEventTitle">Osmanlı Beyliği'nin Kuruluşu</h3>
+              <p id="mapEventText">Osman Gazi döneminde Söğüt merkezli Osmanlı Beyliği'nin kuruluş süreci başladı.</p>
+              <div class="map-event-meta">
+                <div><small>Padişah</small><b id="mapSultan">Osman Gazi</b></div>
+                <div><small>Öne Çıkan Şehir</small><b id="mapFocusCity">Söğüt</b></div>
+                <div><small>Dönem</small><b id="mapEra">Kuruluş</b></div>
+              </div>
+              <button id="mapNarrate" class="secondary">🔊 Sesli Anlat</button>
+            </aside>
+          </div>
+
+          <div class="map-timeline-box">
+            <input id="ottomanYearSlider" type="range" min="1299" max="1922" step="1" value="1299">
+            <div class="map-timeline-labels"><span>1299</span><span>1453</span><span>1517</span><span>1683</span><span>1922</span></div>
+          </div>
+
+          <div class="map-milestones" id="mapMilestones"></div>
+
+          <div class="map-stats-grid">
+            <div><small>Aktif Şehir</small><b id="mapActiveCities">1</b></div>
+            <div><small>Dönüm Noktası</small><b id="mapMilestoneCount">1 / 12</b></div>
+            <div><small>Seçili Padişah</small><b id="mapCurrentSultan">Osman Gazi</b></div>
+            <div><small>Harita İlerlemesi</small><b id="mapProgressPercent">%0</b></div>
+          </div>
+        </article>
+
+        <dialog id="cityInfoDialog" class="city-info-dialog">
+          <article class="city-info-card glass">
+            <button id="cityInfoClose" class="round">×</button>
+            <span class="kicker">ŞEHİR DOSYASI</span>
+            <h3 id="cityInfoTitle"></h3>
+            <p id="cityInfoText"></p>
+            <div class="city-info-meta">
+              <span id="cityInfoYear"></span>
+              <span id="cityInfoSultan"></span>
+            </div>
+          </article>
+        </dialog>
+      </section>
+
+      <section id="timeline" class="page">
+        <div class="page-head"><span class="kicker">1299–1922</span><h2>Taht ve dönüşüm zaman çizelgesi</h2><p>36 padişahı dönemlere göre kronolojik incele.</p></div>
+        <div id="timelineList" class="timeline"></div>
+      </section>
+
+      <section id="dynasty" class="page">
+        <div class="page-head">
+          <span class="kicker">HANEDAN GALERİSİ</span>
+          <h2>36 Osmanlı padişahı tek posterde</h2>
+          <p>Gönderdiğin hanedan görseli büyütülebilir olarak eklendi. Aşağıdan padişah seçerek ansiklopedi dosyasını açabilirsin.</p>
+        </div>
+        <article class="dynasty-poster-card glass">
+          <div class="poster-toolbar">
+            <button id="posterMinus" class="secondary">−</button>
+            <button id="posterReset" class="secondary">%100</button>
+            <button id="posterPlus" class="secondary">+</button>
+            <button id="posterFullscreen" class="secondary">Tam Ekran</button>
+          </div>
+          <div id="posterViewport" class="poster-viewport">
+            <img id="dynastyPoster" src="/assets/hanedan-poster.png" alt="36 Osmanlı padişahı ve Osmanlı arması">
+          </div>
+          <div class="poster-selector">
+            <select id="posterSultanSelect"></select>
+            <button id="posterOpenProfile" class="primary">Padişah Dosyasını Aç</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="compare" class="page">
+        <div class="page-head"><span class="kicker">KARŞILAŞTIRMA LABORATUVARI</span><h2>İki hükümdarı yan yana koy</h2><p>Saltanat, dönem, askerî faaliyet ve yönetim mirasını karşılaştır.</p></div>
+        <article class="compare-lab glass">
+          <div class="compare-controls"><select id="compareA"></select><span>VS</span><select id="compareB"></select><button id="compareRun" class="primary">Karşılaştır</button></div>
+          <div id="compareResult"></div>
+        </article>
+      </section>
+
+      <section id="quiz" class="page">
+        <div class="page-head"><span class="kicker">BİLGİ ARENASI</span><h2>Osmanlı bilgin ne kadar güçlü?</h2><p>Her turda rastgele 10 soru. Seri doğru cevaplarla unvan kazan.</p></div>
+        <article class="quiz-card glass">
+          <div class="quiz-meta"><span id="quizProgress">Soru 1/10</span><b id="quizScore">0 puan</b></div>
+          <div class="quiz-track"><i id="quizFill"></i></div>
+          <h3 id="quizQuestion"></h3><div id="quizOptions" class="quiz-options"></div><p id="quizFeedback"></p>
+          <button id="quizNext" class="primary" disabled>Sonraki</button>
+        </article>
+      </section>
+
+      <section id="glossary" class="page">
+        <div class="page-head"><span class="kicker">TARİH SÖZLÜĞÜ</span><h2>Osmanlı kavramlarını öğren</h2></div>
+        <div class="search-bar glass"><input id="glossarySearch" placeholder="Terim ara..."></div>
+        <div id="glossaryGrid" class="glossary-grid"></div>
+      </section>
+
+      <section id="modelcenter" class="page">
+        <div class="page-head">
+          <span class="kicker">MODEL MERKEZİ</span>
+          <h2>36 sınıflı yapay zekâ modeli</h2>
+          <p>Modelin bildiği sınıfları, standart isim karşılıklarını ve sistem durumunu incele.</p>
+        </div>
+        <div class="model-dashboard">
+          <article class="model-big-card glass">
+            <span class="kicker">MODEL SAĞLIĞI</span>
+            <h3 id="modelHealthTitle">Kontrol ediliyor...</h3>
+            <div class="model-health-bar"><i id="modelHealthFill"></i></div>
+            <p id="modelHealthText" class="muted"></p>
+          </article>
+          <article class="model-mini-card glass"><b id="modelClassMetric">36</b><span>Sınıf</span></article>
+          <article class="model-mini-card glass"><b>224×224</b><span>Girdi boyutu</span></article>
+          <article class="model-mini-card glass"><b id="modelVersionMetric">TM 2.4.14</b><span>Model altyapısı</span></article>
+        </div>
+        <div id="modelLabelGrid" class="label-grid"></div>
+      </section>
+
+      <section id="history" class="page">
+        <div class="page-head">
+          <span class="kicker">ANALİZ GEÇMİŞİ</span>
+          <h2>Önceki tanımalar</h2>
+          <p>Son 30 analiz yalnızca bu tarayıcıda saklanır.</p>
+        </div>
+        <div class="history-actions"><button id="clearHistoryButton" class="secondary">Geçmişi Temizle</button></div>
+        <div id="historyGrid" class="history-grid"></div>
+      </section>
+
+
+      <section id="chat" class="page">
+        <div class="page-head">
+          <span class="kicker">EĞİTİMSEL TARİH ASİSTANI</span>
+          <h2>Padişahla konuş</h2>
+          <p>Bir padişah seç ve hayatı, savaşları, yönetimi veya dönemi hakkında soru sor. Yanıtlar uygulamadaki tarih verilerinden oluşturulur.</p>
+        </div>
+        <div class="chat-layout">
+          <aside class="chat-side glass">
+            <label>Padişah ara
+              <input id="chatSultanSearch" placeholder="Örnek: Fatih, Murad, Abdülhamid...">
+            </label>
+            <div id="chatSultanGrid" class="chat-sultan-grid"></div>
+            <input id="chatSultanSelect" type="hidden">
+            <div id="chatSultanCard" class="chat-sultan-card"></div>
+            <div class="quick-questions">
+              <button data-quick="Hayatınızı kısaca anlatır mısınız?">Hayatını anlat</button>
+              <button data-quick="En önemli savaşınız veya fetihiniz neydi?">Savaşları</button>
+              <button data-quick="Devlet yönetiminde neler yaptınız?">Yönetimi</button>
+              <button data-quick="Döneminizin en önemli özelliği neydi?">Dönemi</button>
+            </div>
+          </aside>
+          <article class="chat-main glass">
+            <div class="chat-disclaimer">Bu bölüm eğitim amaçlı tarihsel bir canlandırmadır; gerçek kişiden alınmış birebir sözler değildir.</div>
+            <section class="living-sultan" id="livingSultan">
+              <div class="living-stage" id="livingStage">
+                <div class="living-aura"></div>
+                <div class="living-avatar" id="livingAvatar" aria-label="Canlanan padişah avatarı">
+                  <div class="turban"><i></i><b>◆</b></div>
+                  <div class="face">
+                    <div class="brow brow-left"></div><div class="brow brow-right"></div>
+                    <div class="eye eye-left"><span></span></div><div class="eye eye-right"><span></span></div>
+                    <div class="nose"></div>
+                    <div class="moustache"><i></i><i></i></div>
+                    <div class="mouth"><span></span></div>
+                    <div class="beard"></div>
+                  </div>
+                  <div class="robe"><span>☾</span></div>
+                </div>
+                <div class="living-nameplate">
+                  <span class="live-badge">● CANLI</span>
+                  <h3 id="livingSultanName">Fatih Sultan Mehmed</h3>
+                  <p id="livingSultanStatus">Sorunu bekliyor</p>
+                </div>
+                <div class="living-wave" id="livingWave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="living-controls">
+                <label class="audio-toggle"><input id="livingVoiceEnabled" type="checkbox" checked><span>Cevapları sesli oku</span></label>
+                <button id="livingIntroduce" class="secondary">🎙 Kendini Tanıt</button>
+                <button id="livingStop" class="secondary">⏹ Sesi Durdur</button>
+              </div>
+            </section>
+            <div id="chatMessages" class="chat-messages"></div>
+            <div class="chat-input-row">
+              <input id="chatInput" placeholder="Örnek: İstanbul'u neden fethettiniz?">
+              <button id="chatSend" class="primary">Sor</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+
+      <section id="historydebate" class="page">
+        <div class="page-head"><span class="kicker">V2.7 • ARGÜMAN VE KANIT</span><h2>Yapay Zekâ Tarih Tartışması</h2><p>İki tarihî kişiyi seç, görüşlerini karşılaştır ve tartışmaya kendi sorularınla katıl.</p></div>
+        <div class="v27-grid">
+          <aside class="v27-panel glass"><h3>Tartışmayı Kur</h3><div class="v27-form-grid"><label>Birinci kişi<select id="debateLeft"></select></label><label>İkinci kişi<select id="debateRight"></select></label></div><label class="v27-field">Tartışma konusu<select id="debateTopic"></select></label><div class="v27-actions"><button id="startDebate" class="primary">Tartışmayı Başlat</button><button id="nextDebateRound" class="secondary">Sonraki Tur</button><button id="finishDebate" class="secondary">Sonuçlandır</button></div><p class="chat-disclaimer">Konuşmalar eğitim amaçlı canlandırmadır; tarihî kişilerin birebir sözleri değildir.</p></aside>
+          <article class="v27-panel glass debate-stage"><div class="debate-scoreboard"><div class="debate-person"><b id="debateLeftName">Birinci kişi</b></div><div><b id="debateRound">Tur 0/3</b><div id="debateScore">0 — 0</div></div><div class="debate-person"><b id="debateRightName">İkinci kişi</b></div></div><div id="debateLog" class="debate-log"><div class="debate-msg judge"><small>Tarih Hakemi</small>İki farklı kişi ve bir konu seçerek tartışmayı başlat.</div></div><div class="chat-input-row"><input id="debateUserInput" placeholder="Tartışmacılara soru sor veya kendi görüşünü yaz"><button id="joinDebate" class="primary">Katıl</button></div></article>
+        </div>
+      </section>
+
+      <section id="detective" class="page">
+        <div class="page-head"><span class="kicker">V2.7 • SARAY GİZEMLERİ</span><h2>Tarih Dedektifi Modu</h2><p>Odaları araştır, şüphelileri sorgula, çelişkileri bul ve doğru kişiyi kanıtlarla belirle.</p></div>
+        <div class="detective-layout">
+          <aside class="v27-panel glass"><h3>Vaka Dosyaları</h3><div id="caseList" class="case-list"></div><div class="detective-notebook"><b>Dedektif Defteri</b><div id="detectiveLog" class="detective-log"><div class="detective-entry">Bir vaka seç ve araştırmaya başla.</div></div></div></aside>
+          <article class="v27-panel glass"><span class="kicker">AKTİF VAKA</span><h2 id="detectiveCaseTitle"></h2><p id="caseIntro"></p><div class="case-stats"><div class="case-stat"><small>Kanıt</small><b id="clueCount">0/3</b></div><div class="case-stat"><small>Sorgu</small><b id="questionCount">0/3</b></div><div class="case-stat"><small>Hak</small><b id="attemptCount">2</b></div></div><div class="case-scene"><h3>🔎 Odaları Araştır</h3><div id="roomGrid" class="room-grid"></div></div><h3>🗣️ Şüphelileri Sorgula</h3><div id="suspectGrid" class="suspect-grid"></div><h3>📌 Kanıt Panosu</h3><div id="evidenceGrid" class="evidence-grid"></div><div class="v27-actions"><label class="v27-field" style="flex:1">Suçlanan kişi<select id="accuseSelect"></select></label><button id="makeAccusation" class="primary">Suçlamayı Yap</button></div><div id="caseResult" class="case-result hidden"></div></article>
+        </div>
+      </section>
+
+      <section id="conquestsim" class="page">
+        <div class="page-head">
+          <span class="kicker">1453 • STRATEJİ VE TARİH</span>
+          <h2>Fetih Simülatörü</h2>
+          <p>Doğru kararları ver, kuşatma hazırlığını tamamla ve İstanbul'un fethini başarıyla yönet.</p>
+        </div>
+
+        <article class="siege-shell glass">
+          <div class="siege-topbar">
+            <div><small>GÖREV</small><b id="siegeMissionName">İstanbul'un Fethi</b></div>
+            <div><small>PUAN</small><b id="siegeScore">0</b></div>
+            <div><small>AŞAMA</small><b id="siegeStageCounter">1 / 5</b></div>
+            <button id="siegeRestart" class="secondary">↺ Baştan Başlat</button>
+          </div>
+
+          <div class="siege-world" id="siegeWorld">
+            <div class="siege-sky">
+              <div class="siege-sun"></div>
+              <div class="siege-cloud c1"></div><div class="siege-cloud c2"></div>
+            </div>
+
+            <div class="siege-city">
+              <div class="siege-wall">
+                <i></i><i></i><i></i><i></i><i></i>
+                <div id="wallDamage" class="wall-damage"></div>
+                <div class="city-gate"></div>
+              </div>
+            </div>
+
+            <div id="rumeliFortress" class="rumeli-fortress hidden-stage">
+              <div class="tower t1"></div><div class="tower t2"></div><div class="tower t3"></div>
+              <span>RUMELİ HİSARI</span>
+            </div>
+
+            <div id="shahiCannonSim" class="shahi-cannon-sim hidden-stage">
+              <div class="cannon-barrel"></div><div class="wheel w1"></div><div class="wheel w2"></div>
+              <button id="fireCannonButton" class="fire-button">🔥 ATEŞ</button>
+            </div>
+
+            <div id="shipsScene" class="ships-scene hidden-stage">
+              <div class="ship ship1">⛵</div><div class="ship ship2">⛵</div><div class="ship ship3">⛵</div>
+              <div class="wood-road"></div>
+            </div>
+
+            <div id="assaultScene" class="assault-scene hidden-stage">
+              <div class="ladder l1"></div><div class="ladder l2"></div>
+              <div class="soldiers">⚔️ ⚔️ ⚔️ ⚔️ ⚔️</div>
+            </div>
+
+            <div id="flagScene" class="flag-scene hidden-stage">
+              <div class="victory-flag"><span>☾</span></div>
+              <div class="victory-rays"></div>
+            </div>
+
+            <div id="siegeAnnouncement" class="siege-announcement">
+              <small>AŞAMA 1</small>
+              <h3>Boğazı Kontrol Et</h3>
+              <p>Bizans'a deniz yoluyla yardım gelmesini engellemek için doğru hazırlığı seç.</p>
+            </div>
+          </div>
+
+          <div class="siege-status-grid">
+            <div><span>Ordu Morali</span><div class="siege-meter"><i id="moraleMeter"></i></div><b id="moraleValue">70</b></div>
+            <div><span>Hazırlık</span><div class="siege-meter"><i id="prepMeter"></i></div><b id="prepValue">20</b></div>
+            <div><span>Sur Dayanıklılığı</span><div class="siege-meter"><i id="wallMeter"></i></div><b id="wallValue">100</b></div>
+          </div>
+
+          <div id="siegeOptions" class="siege-options"></div>
+          <div id="siegeFeedback" class="siege-feedback"></div>
+          <button id="siegeNext" class="primary" disabled>Sonraki Aşama</button>
+        </article>
+      </section>
+
+      <section id="games" class="page">
+        <div class="page-head">
+          <span class="kicker">OSMANLI OYUNLARI</span>
+          <h2>Öğrenirken oyna</h2>
+          <p>Strateji, hızlı karar ve tarih bilgisi gerektiren mini oyunlar.</p>
+        </div>
+
+        <div class="game-tabs glass">
+          <button class="game-tab active" data-game="conquest">Fetih Stratejisi</button>
+          <button class="game-tab" data-game="guess">Kim Bu Padişah?</button>
+          <button class="game-tab" data-game="order">Taht Sırasını Diz</button>
+          <button class="game-tab" data-game="memory">Eşleştirme</button>
+          <button class="game-tab" data-game="speed">60 Saniye</button>
+          <button class="game-tab" data-game="city">Şehri Bul</button>
+          <button class="game-tab" data-game="throne">Tahtı Koru</button>
+          <button class="game-tab" data-game="treasure">Hazine Avı</button>
+        </div>
+
+        <article id="gameConquest" class="game-panel glass">
+          <div class="game-head">
+            <div><span class="kicker">STRATEJİ OYUNU</span><h3>Fetih Stratejisi</h3></div>
+            <b id="conquestScore">0 puan</b>
+          </div>
+          <p id="conquestScenario"></p>
+          <div id="conquestOptions" class="game-options"></div>
+          <div id="conquestFeedback" class="game-feedback"></div>
+          <button id="conquestNext" class="primary" disabled>Sonraki Görev</button>
+        </article>
+
+        <article id="gameGuess" class="game-panel glass hidden">
+          <div class="game-head">
+            <div><span class="kicker">TAHMİN OYUNU</span><h3>Kim Bu Padişah?</h3></div>
+            <b id="guessScore">0 puan</b>
+          </div>
+          <div id="guessClues" class="clue-box"></div>
+          <div id="guessOptions" class="game-options"></div>
+          <div id="guessFeedback" class="game-feedback"></div>
+          <button id="guessNext" class="primary" disabled>Yeni Padişah</button>
+        </article>
+
+        <article id="gameOrder" class="game-panel glass hidden">
+          <div class="game-head">
+            <div><span class="kicker">KRONOLOJİ OYUNU</span><h3>Taht Sırasını Diz</h3></div>
+            <b id="orderScore">0 puan</b>
+          </div>
+          <p>Kartları doğru sıraya dizmek için üzerlerine tıkla.</p>
+          <div id="orderPool" class="order-pool"></div>
+          <div id="orderAnswer" class="order-answer"></div>
+          <div id="orderFeedback" class="game-feedback"></div>
+          <button id="orderReset" class="secondary">Yeniden Karıştır</button>
+        </article>
+              <article id="gameThrone" class="game-panel glass hidden">
+          <div class="game-head">
+            <div><span class="kicker">DEVLET YÖNETİMİ SİMÜLASYONU</span><h3>Tahtı Koru</h3></div>
+            <b id="throneScore">İtibar: 50</b>
+          </div>
+          <div class="throne-meters">
+            <div><span>Hazine</span><div class="mini-track"><i id="throneTreasury"></i></div></div>
+            <div><span>Ordu</span><div class="mini-track"><i id="throneArmy"></i></div></div>
+            <div><span>Halk</span><div class="mini-track"><i id="thronePeople"></i></div></div>
+          </div>
+          <div id="throneEvent" class="royal-event"></div>
+          <div id="throneOptions" class="game-options"></div>
+          <div id="throneFeedback" class="game-feedback"></div>
+          <button id="throneNext" class="primary" disabled>Sonraki Divan</button>
+        </article>
+
+        <article id="gameTreasure" class="game-panel glass hidden">
+          <div class="game-head">
+            <div><span class="kicker">HARİTA VE İPUCU OYUNU</span><h3>Osmanlı Hazine Avı</h3></div>
+            <b id="treasureScore">0 altın</b>
+          </div>
+          <div class="treasure-layout">
+            <div class="treasure-map">
+              <button class="treasure-place" data-place="İstanbul" style="left:45%;top:28%">İstanbul</button>
+              <button class="treasure-place" data-place="Bursa" style="left:39%;top:40%">Bursa</button>
+              <button class="treasure-place" data-place="Edirne" style="left:28%;top:22%">Edirne</button>
+              <button class="treasure-place" data-place="Trabzon" style="left:76%;top:32%">Trabzon</button>
+              <button class="treasure-place" data-place="Kahire" style="left:54%;top:82%">Kahire</button>
+              <button class="treasure-place" data-place="Bağdat" style="left:82%;top:67%">Bağdat</button>
+              <span class="map-sea">AKDENİZ</span>
+            </div>
+            <div class="treasure-clue">
+              <span class="kicker">HAZİNE İPUCU</span>
+              <h3 id="treasureTitle"></h3>
+              <p id="treasureHint"></p>
+              <div id="treasureFeedback" class="game-feedback"></div>
+              <button id="treasureNext" class="primary" disabled>Yeni Hazine</button>
+            </div>
+          </div>
+        </article>
+
+        <article id="gameMemory" class="game-panel glass hidden">
+          <div class="game-head"><div><span class="kicker">HAFIZA OYUNU</span><h3>Padişah–Başarı Eşleştir</h3></div><b id="memoryScore">0 puan</b></div>
+          <div id="memoryBoard" class="memory-board"></div>
+          <button id="memoryReset" class="secondary">Yeniden Başlat</button>
+        </article>
+
+        <article id="gameSpeed" class="game-panel glass hidden">
+          <div class="game-head"><div><span class="kicker">SÜRELİ CHALLENGE</span><h3>60 Saniyede Ne Kadar Biliyorsun?</h3></div><b id="speedTimer">60 sn</b></div>
+          <h3 id="speedQuestion">Başlatmaya hazır.</h3>
+          <div id="speedOptions" class="game-options"></div>
+          <div id="speedFeedback" class="game-feedback"></div>
+          <button id="speedStart" class="primary">Başlat</button>
+        </article>
+
+        <article id="gameCity" class="game-panel glass hidden">
+          <div class="game-head"><div><span class="kicker">ŞEHİR OYUNU</span><h3>Bu Şehri Kim Fethetti?</h3></div><b id="cityScore">0 puan</b></div>
+          <div id="cityQuestion" class="clue-box"></div>
+          <div id="cityOptions" class="game-options"></div>
+          <div id="cityFeedback" class="game-feedback"></div>
+          <button id="cityNext" class="primary" disabled>Yeni Şehir</button>
+        </article>
+
+      </section>
+
+      <section id="museum" class="page">
+        <div class="page-head">
+          <span class="kicker">DİJİTAL OSMANLI MÜZESİ</span>
+          <h2>Hanedan, dönemler ve başarılar</h2>
+          <p>Uygulamadaki içerikleri bir müze deneyimi gibi keşfet.</p>
+        </div>
+        <div class="museum-grid">
+          <article class="museum-card glass"><span>♔</span><h3>Hanedan Salonu</h3><p>36 padişahı posterde görüntüle ve profillerine geç.</p><button class="secondary" data-jump="dynasty">Salona Git</button></article>
+          <article class="museum-card glass"><span>◉</span><h3>Yapay Zekâ Laboratuvarı</h3><p>Bir portre yükleyip 36 sınıflı modelle kim olduğunu bul.</p><button class="secondary" data-jump="recognition">Laboratuvara Git</button></article>
+          <article class="museum-card glass"><span>✦</span><h3>Padişahla Sohbet</h3><p>Seçtiğin padişaha eğitimsel sorular sor.</p><button class="secondary" data-jump="chat">Sohbete Git</button></article>
+          <article class="museum-card glass"><span>⚔</span><h3>Oyun Alanı</h3><p>Tarih bilgini mini oyunlarla sınayarak puan kazan.</p><button class="secondary" data-jump="games">Oyunlara Git</button></article>
+        </div>
+      </section>
+
+
+      <section id="achievements" class="page">
+        <div class="page-head"><span class="kicker">ROZET VE BAŞARI SİSTEMİ</span><h2>Kazandığın unvanlar</h2><p>Tanıma, oyunlar, ansiklopedi ve sohbet kullanımıyla XP ve rozet kazan.</p></div>
+        <div id="achievementGrid" class="achievement-grid"></div>
+      </section>
+
+      <section id="advisor" class="page">
+        <div class="page-head"><span class="kicker">TARİHSEL STRATEJİ ASİSTANI</span><h2>Osmanlı Danışmanı</h2><p>Bir tarihsel hedef yaz; uygulama kendi veritabanından stratejik ve eğitimsel bir plan oluştursun.</p></div>
+        <article class="advisor-card glass">
+          <div class="advisor-presets">
+            <button data-advisor="İstanbul'u fethetmek istiyorum">İstanbul'un Fethi</button>
+            <button data-advisor="Donanmayı güçlendirmek istiyorum">Donanma</button>
+            <button data-advisor="Devleti modernleştirmek istiyorum">Modernleşme</button>
+            <button data-advisor="Uzun bir sefer planlıyorum">Sefer Planı</button>
+          </div>
+          <div class="advisor-input"><input id="advisorInput" placeholder="Hedefini yaz..."><button id="advisorRun" class="primary">Plan Oluştur</button></div>
+          <div id="advisorOutput" class="advisor-output"><p class="muted">Bir hedef seç veya kendi hedefini yaz.</p></div>
+        </article>
+      </section>
+
+      <section id="stats" class="page">
+        <div class="page-head"><span class="kicker">KİŞİSEL İLERLEME</span><h2>İstatistikler</h2><p>Uygulamadaki öğrenme ve oyun performansın.</p></div>
+        <div class="stats-dashboard">
+          <article class="stat glass"><b id="statAnalyses">0</b><span>AI analizi</span></article>
+          <article class="stat glass"><b id="statChats">0</b><span>Sohbet sorusu</span></article>
+          <article class="stat glass"><b id="statGames">0</b><span>Oyun oturumu</span></article>
+          <article class="stat glass"><b id="statXP">0</b><span>Toplam XP</span></article>
+        </div>
+        <article class="stats-detail glass"><h3>En çok tanınan padişah</h3><p id="mostRecognized">Henüz veri yok.</p><h3>En iyi bilgi yarışması puanı</h3><p id="bestQuizDetailed">0/100</p></article>
+      </section>
+
+
+      <section id="palace" class="page">
+        <div class="page-head"><span class="kicker">CANLI SARAY REHBERİ</span><h2>Topkapı Sarayı'nı keşfet</h2><p>Salonlara tıkla, görevlerini ve tarihî önemlerini öğren.</p></div>
+        <div class="palace-layout">
+          <article class="palace-map glass">
+            <button class="palace-room active" data-room="divan" style="left:12%;top:18%">Divan-ı Hümayun</button>
+            <button class="palace-room" data-room="enderun" style="left:55%;top:18%">Enderun</button>
+            <button class="palace-room" data-room="hazine" style="left:28%;top:55%">Hazine</button>
+            <button class="palace-room" data-room="hasoda" style="left:67%;top:55%">Has Oda</button>
+            <button class="palace-room" data-room="mutfak" style="left:42%;top:78%">Saray Mutfakları</button>
+          </article>
+          <article id="palaceInfo" class="palace-info glass"></article>
+        </div>
+      </section>
+
+      <section id="ferman" class="page">
+        <div class="page-head"><span class="kicker">YAPAY ZEKÂ DESTEKLİ METİN TASARIMI</span><h2>Ferman Yazıcısı</h2><p>Bir konu yaz; uygulama Osmanlı üslubunu taklit eden, eğitim amaçlı bir ferman metni hazırlasın.</p></div>
+        <article class="ferman-card glass">
+          <div class="ferman-controls">
+            <input id="fermanTopic" placeholder="Örnek: okulda kitap okuma haftası">
+            <select id="fermanTone"><option value="resmi">Resmî</option><option value="kutlama">Kutlama</option><option value="duyuru">Duyuru</option></select>
+            <button id="fermanCreate" class="primary">Ferman Oluştur</button>
+          </div>
+          <div id="fermanPaper" class="ferman-paper"><p class="muted">Konu yazıp ferman oluştur.</p></div>
+          <div class="profile-actions"><button id="fermanSpeak" class="secondary">▶ Seslendir</button><button id="fermanDownload" class="secondary">↓ İndir</button></div>
+        </article>
+      </section>
+
+      <section id="gallery" class="page">
+        <div class="page-head"><span class="kicker">MİMARİ VE KÜLTÜR GALERİSİ</span><h2>Osmanlı eserleri ve sembolleri</h2><p>Cami, saray, hisar, köprü ve para sistemini kartlar üzerinden incele.</p></div>
+        <div class="gallery-tabs glass">
+          <button class="gallery-tab active" data-gallery="architecture">Mimari</button>
+          <button class="gallery-tab" data-gallery="coins">Paralar</button>
+          <button class="gallery-tab" data-gallery="documents">Belgeler</button>
+        </div>
+        <div id="galleryGrid" class="gallery-grid"></div>
+      </section>
+
+      <section id="story" class="page">
+        <div class="page-head"><span class="kicker">ETKİLEŞİMLİ HİKÂYE</span><h2>Bir Osmanlı görevlisinin yolculuğu</h2><p>Seçimlerin hikâyenin gidişatını ve puanını değiştirsin.</p></div>
+        <article class="story-card glass">
+          <div class="story-status"><span id="storyRole">Genç Akıncı</span><b id="storyPoints">0 itibar</b></div>
+          <h3 id="storyTitle"></h3>
+          <p id="storyText"></p>
+          <div id="storyChoices" class="story-choices"></div>
+          <button id="storyRestart" class="secondary">Hikâyeyi Baştan Başlat</button>
+        </article>
+      </section>
+
+      <section id="daily" class="page">
+        <div class="page-head"><span class="kicker">GÜNLÜK ÖĞRENME</span><h2>Günün görevi</h2><p>Her gün farklı bir soru ve mini görev. Doğru cevap +25 XP.</p></div>
+        <article class="daily-card glass">
+          <div class="daily-date" id="dailyDate"></div>
+          <h3 id="dailyQuestion"></h3>
+          <div id="dailyOptions" class="game-options"></div>
+          <div id="dailyFeedback" class="game-feedback"></div>
+          <p id="dailyStatus" class="muted"></p>
+        </article>
+      </section>
+
+
+      <section id="voice" class="page">
+        <div class="page-head"><span class="kicker">SESLE TARİH</span><h2>Sesli Padişah</h2><p>Bir padişah seç; hayatı ve dönemini Türkçe sesli rehber olarak dinle.</p></div>
+        <div class="voice-layout">
+          <article class="voice-control glass">
+            <label>Padişah seç<select id="voiceSultanSelect"></select></label>
+            <label>Ses hızı<input id="voiceRate" type="range" min="0.7" max="1.2" step="0.05" value="0.95"></label>
+            <label>Anlatım türü<select id="voiceMode"><option value="summary">Kısa Biyografi</option><option value="military">Savaşlar ve Fetihler</option><option value="legacy">Yönetim ve Miras</option></select></label>
+            <div class="voice-buttons"><button id="voicePlay" class="primary">▶ Konuş</button><button id="voicePause" class="secondary">⏸ Duraklat</button><button id="voiceStop" class="secondary">⏹ Durdur</button></div>
+          </article>
+          <article class="voice-stage glass">
+            <div class="voice-orb">👑</div>
+            <h3 id="voiceSultanName"></h3>
+            <p id="voiceText"></p>
+            <div class="voice-wave"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="teacher" class="page">
+        <div class="page-head"><span class="kicker">AKILLI TARİH ÖĞRETMENİ</span><h2>AI Öğretmen</h2><p>Sorunu yaz; uygulama kendi Osmanlı veritabanından açıklama, özet veya mini test oluşturur.</p></div>
+        <article class="teacher-card glass">
+          <div class="teacher-toolbar">
+            <select id="teacherLevel"><option value="simple">5. sınıf seviyesi</option><option value="normal">Orta düzey</option><option value="advanced">Ayrıntılı anlatım</option></select>
+            <select id="teacherTask"><option value="explain">Anlat</option><option value="summary">Özetle</option><option value="quiz">Test Hazırla</option><option value="compare">Karşılaştır</option></select>
+          </div>
+          <div class="teacher-input"><input id="teacherQuestion" placeholder="Örnek: Osmanlı neden yükseldi?"><button id="teacherAsk" class="primary">Cevapla</button></div>
+          <div id="teacherOutput" class="teacher-output"><p class="muted">Sorunu yaz ve görev türünü seç.</p></div>
+          <div class="teacher-suggestions">
+            <button data-teacher-q="İstanbul'un fethini anlat">İstanbul'un Fethi</button>
+            <button data-teacher-q="Fatih ile Kanuni'yi karşılaştır">Fatih ve Kanuni</button>
+            <button data-teacher-q="Osmanlı'nın yükseliş nedenleri">Yükseliş Nedenleri</button>
+            <button data-teacher-q="Nizam-ı Cedid nedir">Nizam-ı Cedid</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="map" class="page">
+        <div class="page-head"><span class="kicker">1299–1922</span><h2>Animasyonlu Fetih Haritası</h2><p>Yıl çizgisini hareket ettir; seçilen dönemdeki önemli fetihleri ve olayları gör.</p></div>
+        <article class="animated-map-card glass">
+          <div class="map-controls"><input id="mapYear" type="range" min="1299" max="1922" step="1" value="1299"><b id="mapYearLabel">1299</b><button id="mapPlay" class="primary">▶ Oynat</button><button id="mapReset" class="secondary">Başa Dön</button></div>
+          <div class="ottoman-map" id="ottomanMap">
+            <div id="empireGlow" class="empire-glow"></div>
+            <button class="map-city" data-year="1326" data-city="Bursa" style="left:39%;top:38%">Bursa</button>
+            <button class="map-city" data-year="1362" data-city="Edirne" style="left:28%;top:26%">Edirne</button>
+            <button class="map-city" data-year="1453" data-city="İstanbul" style="left:44%;top:30%">İstanbul</button>
+            <button class="map-city" data-year="1461" data-city="Trabzon" style="left:72%;top:35%">Trabzon</button>
+            <button class="map-city" data-year="1517" data-city="Kahire" style="left:52%;top:82%">Kahire</button>
+            <button class="map-city" data-year="1521" data-city="Belgrad" style="left:25%;top:19%">Belgrad</button>
+            <button class="map-city" data-year="1522" data-city="Rodos" style="left:44%;top:65%">Rodos</button>
+            <button class="map-city" data-year="1534" data-city="Bağdat" style="left:80%;top:64%">Bağdat</button>
+            <div class="map-label sea-label">AKDENİZ</div><div class="map-label black-label">KARADENİZ</div>
+          </div>
+          <div id="mapEvent" class="map-event"></div>
+        </article>
+      </section>
+
+      <section id="timegate" class="page">
+        <div class="page-head"><span class="kicker">TARİHİN KAPILARI</span><h2>Zaman Kapısı</h2><p>Bir döneme dokun. Kapı açılsın ve uygulama seçtiğin dönemin atmosferine bürünsün.</p></div>
+        <article id="timegateAtmosphere" class="timegate-stage glass era-scene era-1453">
+          <div class="era-sky">
+            <div class="era-sun"></div>
+            <div class="era-cloud cloud-a"></div>
+            <div class="era-cloud cloud-b"></div>
+            <div class="era-birds">⌁⌁⌁</div>
+          </div>
+
+          <div class="era-world era-world-1453">
+            <div class="fortress-walls">
+              <i></i><i></i><i></i><i></i><i></i>
+              <div class="fortress-gate"></div>
+            </div>
+            <div class="shahi-cannon"><span></span></div>
+            <div class="sultan-silhouette fatih"><b>👑</b><small>Fatih Sultan Mehmed</small></div>
+            <div class="ottoman-flag"><span>☾</span></div>
+            <div class="battle-smoke smoke-1"></div><div class="battle-smoke smoke-2"></div>
+          </div>
+
+          <div class="era-world era-world-1512">
+            <div class="desert-dunes dune-a"></div><div class="desert-dunes dune-b"></div>
+            <div class="pyramid pyramid-a"></div><div class="pyramid pyramid-b"></div>
+            <div class="sultan-silhouette yavuz"><b>⚔️</b><small>Yavuz Sultan Selim</small></div>
+            <div class="caravan"><span>🐎</span><span>🐎</span><span>🐎</span></div>
+            <div class="sand-wind"></div>
+          </div>
+
+          <div class="era-world era-world-1520">
+            <div class="mosque-scene">
+              <div class="main-dome"></div><div class="small-dome d1"></div><div class="small-dome d2"></div>
+              <div class="minaret m1"></div><div class="minaret m2"></div><div class="minaret m3"></div><div class="minaret m4"></div>
+            </div>
+            <div class="sultan-silhouette kanuni"><b>⚖️</b><small>Kanuni Sultan Süleyman</small></div>
+            <div class="gold-pattern"></div>
+          </div>
+
+          <div class="era-world era-world-1876">
+            <div class="night-stars"></div>
+            <div class="yildiz-palace"><i></i><i></i><i></i><i></i></div>
+            <div class="railway-track"></div>
+            <div class="steam-train"><span>🚂</span><i></i></div>
+            <div class="sultan-silhouette abdulhamid"><b>🚂</b><small>II. Abdülhamid</small></div>
+          </div>
+
+          <div class="era-vignette"></div>
+          
+          <div id="timegateDoor" class="timegate-door">
+            <div class="door-left"><span></span></div><div class="door-right"><span></span></div>
+            <div class="timegate-core"><small>SEÇİLİ DÖNEM</small><b id="timegateYear">1453</b><h3 id="timegateSultan">Fatih Sultan Mehmed</h3><p id="timegateSummary">İstanbul'un fethi ve imparatorluk başkentinin doğuşu.</p></div>
+            <div class="timegate-energy"></div>
+          </div>
+          <div class="timegate-controls"><button id="openTimegate" class="primary">⚡ Kapıyı Aç</button><button id="resetTimegate" class="secondary">↺ Günümüze Dön</button></div>
+        </article>
+        <section class="era-cards">
+          <button class="era-card active" data-era-key="1453"><span>🏰</span><small>1453</small><h3>Fetih Çağı</h3><p>Fatih Sultan Mehmed</p></button>
+          <button class="era-card" data-era-key="1512"><span>⚔️</span><small>1512</small><h3>Doğu Seferleri</h3><p>Yavuz Sultan Selim</p></button>
+          <button class="era-card" data-era-key="1520"><span>⚖️</span><small>1520</small><h3>Kanuni'nin Çağı</h3><p>Kanuni Sultan Süleyman</p></button>
+          <button class="era-card" data-era-key="1876"><span>🚂</span><small>1876</small><h3>Yıldız Dönemi</h3><p>II. Abdülhamid</p></button>
+        </section>
+        <article class="timegate-result glass"><span class="kicker">DÖNEM ETKİLERİ</span>
+          <div class="timegate-result-grid">
+            <div><small>Padişahla Konuş</small><b id="timegateChatTarget">Fatih Sultan Mehmed</b></div>
+            <div><small>Radyo İstasyonu</small><b id="timegateRadioTarget">Fetih1453 FM</b></div>
+            <div><small>Renk Teması</small><b id="timegateThemeTarget">Fetih Kırmızısı</b></div>
+            <div><small>Tarih Olayı</small><b id="timegateEventTarget">İstanbul'un Fethi</b></div>
+          </div>
+        </article>
+      </section>
+
+      <section id="tv" class="page">
+<div class="page-head"><span class="kicker">TARİHİN SESİ</span><h2>Osmanlı Radyo Merkezi</h2><p>İstasyonunu seç, tarih anlatımını dinle. Özgün mehter esintili fon müziği uygulama boyunca devam eder.</p></div>
+<article class="radio-console glass">
+<div class="radio-wood"><div class="radio-display"><span class="live-dot">● CANLI</span><small>ŞU AN ÇALIYOR</small><h3 id="radioStationName">Fetih1453 FM</h3><p id="radioProgramTitle">İstanbul'un Fethi</p><div class="radio-frequency"><span>88</span><span>90</span><span>92</span><span>94</span><span>96</span><span>98</span><span>100</span><i id="radioNeedle"></i></div></div><div class="radio-speaker"><div class="speaker-grid"></div><div id="radioWave" class="radio-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="radio-knobs"><button id="radioPrevious" class="radio-knob">◀</button><button id="radioPlay" class="radio-main-button">▶</button><button id="radioNext" class="radio-knob">▶</button></div></div>
+<div class="radio-program"><span class="kicker">PROGRAM</span><h3 id="radioEpisodeTitle"></h3><p id="radioEpisodeText"></p><div class="radio-progress"><i id="radioProgressFill"></i></div><div class="radio-actions"><button id="radioSpeak" class="primary">🎙 Anlatımı Başlat</button><button id="radioStopSpeech" class="secondary">⏹ Anlatımı Durdur</button></div></div>
+</article>
+<section class="radio-stations-section"><div class="section-title"><div><span class="kicker">İSTASYONLAR</span><h2>Bir frekans seç</h2></div></div><div id="radioStationGrid" class="radio-station-grid"></div></section>
+</section>
+<section id="museum3d" class="page">
+        <div class="page-head"><span class="kicker">GERÇEK WEBGL DENEYİMİ</span><h2>Gezilebilir 3D Osmanlı Müzesi</h2><p>WASD ile yürü, fareyle etrafa bak, eserlerin yanına git ve E tuşuna bas.</p></div>
+        <article class="real3d-shell glass">
+          <div class="real3d-toolbar"><button id="enter3dMuseum" class="primary">3D Müzeye Gir</button><button id="exit3dMuseum" class="secondary">Müzeden Çık</button><span id="museum3dStatus">Hazır</span></div>
+          <div id="real3dContainer" class="real3d-container"><div id="real3dCrosshair">+</div><div id="real3dHint">WASD: hareket • Fare: bakış • E: incele • ESC: imleci bırak</div><div id="real3dPanel" class="real3d-panel hidden"><button id="close3dPanel" class="round">×</button><span class="kicker">MÜZE ESERİ</span><h3 id="real3dTitle"></h3><p id="real3dText"></p><button id="real3dSpeak" class="secondary">▶ Sesli Anlat</button></div></div>
+        </article>
+      </section>
+    
+      <section id="treasury" class="page">
+        <div class="page-head">
+          <span class="kicker">OSMANLI HAZİNESİ</span>
+          <h2>Hazine Odası</h2>
+          <p>Tarihî eserleri seç, üç boyutlu döndürme efektiyle incele ve sesli anlatımı dinle.</p>
+        </div>
+
+        <div class="treasury-layout">
+          <aside class="treasury-list glass" id="treasuryList"></aside>
+
+          <article class="treasury-stage glass">
+            <div class="treasury-spotlight"></div>
+            <div id="treasuryArtifact" class="treasury-artifact">
+              <div id="treasuryArtifactIcon" class="treasury-artifact-icon">⚔️</div>
+            </div>
+            <div class="treasury-info">
+              <span id="treasuryArtifactCategory" class="kicker">SİLAH</span>
+              <h3 id="treasuryArtifactTitle">Fetih Kılıcı</h3>
+              <p id="treasuryArtifactText"></p>
+              <div class="treasury-meta">
+                <span id="treasuryArtifactEra"></span>
+                <span id="treasuryArtifactRarity"></span>
+              </div>
+              <div class="treasury-actions">
+                <button id="treasuryRotate" class="primary">↻ 360° İncele</button>
+                <button id="treasurySpeak" class="secondary">🔊 Sesli Anlat</button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <article class="legendary-artifact glass">
+          <span class="kicker">GÜNÜN EFSANEVİ ESERİ</span>
+          <h3 id="legendaryArtifactTitle"></h3>
+          <p id="legendaryArtifactText"></p>
+        </article>
+      </section>
+
+      <section id="escaperoom" class="page">
+        <div class="page-head">
+          <span class="kicker">ZEKA • TARİH • BULMACA</span>
+          <h2>Osmanlı Escape Room</h2>
+          <p>Odaları sırayla aç, tarihî ipuçlarını çöz ve son sandığa ulaş.</p>
+        </div>
+
+        <article class="escape-shell glass">
+          <div class="escape-topbar">
+            <div><small>ODA</small><b id="escapeRoomName">Fetih Odası</b></div>
+            <div><small>PUAN</small><b id="escapeScore">0</b></div>
+            <div><small>İPUCU</small><b id="escapeHintCount">3</b></div>
+            <button id="escapeRestart" class="secondary">↺ Yeniden Başlat</button>
+          </div>
+
+          <div class="escape-scene" id="escapeScene">
+            <div class="escape-torch torch-left"></div>
+            <div class="escape-torch torch-right"></div>
+            <div class="escape-door" id="escapeDoor">
+              <div class="escape-lock">🔒</div>
+              <span id="escapeDoorLabel">FETİH ODASI</span>
+            </div>
+
+            <div class="escape-puzzle-card glass">
+              <span id="escapePuzzleStep" class="kicker">BULMACA 1 / 4</span>
+              <h3 id="escapeQuestion"></h3>
+              <p id="escapeClue"></p>
+              <div id="escapeOptions" class="escape-options"></div>
+              <div id="escapeFeedback" class="escape-feedback"></div>
+              <div class="escape-actions">
+                <button id="escapeHint" class="secondary">💡 İpucu Kullan</button>
+                <button id="escapeNext" class="primary" disabled>Sonraki Bulmaca</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="escape-room-strip">
+            <button class="escape-room-chip active" data-room-index="0">⚔️ Fetih Odası</button>
+            <button class="escape-room-chip" data-room-index="1" disabled>🏛 Saray Odası</button>
+            <button class="escape-room-chip" data-room-index="2" disabled>💎 Hazine Odası</button>
+            <button class="escape-room-chip" data-room-index="3" disabled>📜 Sırlar Odası</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="achievements" class="page">
+        <div class="page-head">
+          <span class="kicker">İLERLEME VE ROZETLER</span>
+          <h2>Başarı Sistemi</h2>
+          <p>Oyunları tamamla, haritayı keşfet, padişahlarla konuş ve yeni rozetler kazan.</p>
+        </div>
+
+        <article class="achievement-profile glass">
+          <div class="achievement-avatar">👑</div>
+          <div class="achievement-profile-info">
+            <span class="kicker">OSMANLI SEVDALISI</span>
+            <h3 id="achievementLevelTitle">Seviye 1</h3>
+            <div class="achievement-xp-bar"><i id="achievementXpFill"></i></div>
+            <p><b id="achievementXpText">0 / 500 XP</b></p>
+          </div>
+        </article>
+
+        <div class="achievement-stats">
+          <div class="glass"><small>Toplam XP</small><b id="achievementTotalXp">0</b></div>
+          <div class="glass"><small>Kazanılan Rozet</small><b id="achievementBadgeCount">0 / 8</b></div>
+          <div class="glass"><small>Tamamlanan Görev</small><b id="achievementTaskCount">0</b></div>
+          <div class="glass"><small>Başarı Yüzdesi</small><b id="achievementPercent">%0</b></div>
+        </div>
+
+        <section>
+          <div class="section-title"><div><span class="kicker">ROZETLER</span><h2>Koleksiyonun</h2></div></div>
+          <div id="achievementGrid" class="achievement-grid"></div>
+        </section>
+
+        <article class="achievement-mission glass">
+          <span class="kicker">AKTİF GÖREV</span>
+          <h3 id="achievementMissionTitle">İstanbul'un Fethi hakkında 5 doğru cevap ver</h3>
+          <div class="achievement-mission-progress"><i id="achievementMissionFill"></i></div>
+          <p id="achievementMissionText">0 / 5 tamamlandı</p>
+          <button id="achievementClaim" class="primary" disabled>Ödülü Al</button>
+        </article>
+      </section>
+
+      <section id="historyanalysis" class="page">
+        <div class="page-head">
+          <span class="kicker">YEREL YAPAY ZEKÂ ANALİZ MODÜLÜ</span>
+          <h2>Yapay Zekâ Tarih Analizi</h2>
+          <p>Bir konu seç veya sorunu yaz; uygulama kendi Osmanlı bilgi tabanından neden-sonuç, karşılaştırma ve güçlü-zayıf yön analizi üretir.</p>
+        </div>
+
+        <article class="history-analysis-shell glass">
+          <div class="history-analysis-controls">
+            <label>Konu
+              <select id="historyAnalysisTopic">
+                <option value="rise">Osmanlı neden yükseldi?</option>
+                <option value="istanbul">İstanbul'un fethinin sonuçları</option>
+                <option value="kanuni">Kanuni döneminin gücü</option>
+                <option value="reform">Osmanlı reformları neden zorlandı?</option>
+                <option value="decline">Gerileme sürecinin nedenleri</option>
+                <option value="custom">Kendi sorumu yazacağım</option>
+              </select>
+            </label>
+            <label>Analiz biçimi
+              <select id="historyAnalysisMode">
+                <option value="cause">Neden-Sonuç</option>
+                <option value="swot">Güçlü-Zayıf Yönler</option>
+                <option value="compare">Karşılaştırma</option>
+                <option value="timeline">Kronolojik Analiz</option>
+              </select>
+            </label>
+            <label>Seviye
+              <select id="historyAnalysisLevel">
+                <option value="simple">5. sınıf</option>
+                <option value="normal" selected>Orta düzey</option>
+                <option value="advanced">Ayrıntılı</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="history-analysis-input">
+            <input id="historyAnalysisQuestion" placeholder="Örnek: Osmanlı neden kısa sürede büyüdü?">
+            <button id="runHistoryAnalysis" class="primary">Analiz Et</button>
+          </div>
+
+          <div class="history-analysis-dashboard">
+            <section class="analysis-score-card">
+              <span class="kicker">ANALİZ GÜVENİ</span>
+              <div id="analysisConfidence" class="analysis-confidence">%</div>
+              <p id="analysisConfidenceText">Konu ve veri eşleşmesi hesaplanıyor.</p>
+            </section>
+
+            <section class="analysis-main-card">
+              <span class="kicker">YAPAY ZEKÂ RAPORU</span>
+              <h3 id="analysisTitle">Analiz bekleniyor</h3>
+              <div id="analysisOutput" class="analysis-output">
+                <p class="muted">Bir konu seçip “Analiz Et” düğmesine bas.</p>
+              </div>
+            </section>
+          </div>
+
+          <div class="analysis-mini-charts">
+            <article class="glass">
+              <h3>Etki Dağılımı</h3>
+              <div class="analysis-bar"><span>Askerî</span><i id="analysisMilitary"></i><b id="analysisMilitaryValue">0</b></div>
+              <div class="analysis-bar"><span>Yönetim</span><i id="analysisAdmin"></i><b id="analysisAdminValue">0</b></div>
+              <div class="analysis-bar"><span>Ekonomi</span><i id="analysisEconomy"></i><b id="analysisEconomyValue">0</b></div>
+              <div class="analysis-bar"><span>Kültür</span><i id="analysisCulture"></i><b id="analysisCultureValue">0</b></div>
+            </article>
+            <article class="glass">
+              <h3>Önerilen Devam Adımları</h3>
+              <div id="analysisRecommendations" class="analysis-recommendations"></div>
+            </article>
+          </div>
+        </article>
+      </section>
+
+      <section id="battletactics" class="page">
+        <div class="page-head">
+          <span class="kicker">STRATEJİ MASASI</span>
+          <h2>Savaş Taktiği</h2>
+          <p>Bir savaş senaryosu seç, birliklerini yerleştir ve uygulamanın taktik analizini gör.</p>
+        </div>
+
+        <article class="battle-shell glass">
+          <div class="battle-toolbar">
+            <label>Senaryo
+              <select id="battleScenarioSelect">
+                <option value="siege">Kale Kuşatması</option>
+                <option value="field">Açık Alan Savaşı</option>
+                <option value="river">Nehir Geçişi</option>
+                <option value="naval">Deniz Muharebesi</option>
+              </select>
+            </label>
+            <label>Zorluk
+              <select id="battleDifficulty">
+                <option value="easy">Kolay</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Zor</option>
+              </select>
+            </label>
+            <button id="battleReset" class="secondary">↺ Sıfırla</button>
+            <button id="battleAnalyze" class="primary">♟ Taktiği Analiz Et</button>
+          </div>
+
+          <div class="battle-layout">
+            <section class="battle-board-wrap">
+              <div id="battleBoard" class="battle-board">
+                <div class="battle-grid"></div>
+                <div id="battleObjective" class="battle-objective">🏰</div>
+                <div id="battleRiver" class="battle-river hidden"></div>
+                <div id="battleSea" class="battle-sea hidden"></div>
+              </div>
+            </section>
+
+            <aside class="battle-unit-panel glass">
+              <span class="kicker">BİRLİKLER</span>
+              <div id="battleUnitPalette" class="battle-unit-palette">
+                <button class="battle-unit" data-unit="infantry"><span>⚔️</span><b>Piyade</b><small>Dengeli</small></button>
+                <button class="battle-unit" data-unit="archer"><span>🏹</span><b>Okçu</b><small>Uzak menzil</small></button>
+                <button class="battle-unit" data-unit="cavalry"><span>🐎</span><b>Süvari</b><small>Hızlı hücum</small></button>
+                <button class="battle-unit" data-unit="artillery"><span>💣</span><b>Topçu</b><small>Kuşatma gücü</small></button>
+                <button class="battle-unit" data-unit="navy"><span>⛵</span><b>Donanma</b><small>Deniz üstünlüğü</small></button>
+              </div>
+              <div class="battle-selected">
+                <small>Seçili birlik</small>
+                <b id="battleSelectedUnit">Piyade</b>
+              </div>
+              <p class="muted">Birlik seç, sonra harita üzerinde yerleştirmek istediğin kareye tıkla.</p>
+            </aside>
+          </div>
+
+          <section class="battle-analysis-panel glass">
+            <div>
+              <span class="kicker">TAKTİK PUANI</span>
+              <div id="battleScore" class="battle-score">0</div>
+            </div>
+            <div class="battle-analysis-text">
+              <h3 id="battleAnalysisTitle">Taktiğini kur</h3>
+              <p id="battleAnalysisText">Henüz analiz yapılmadı.</p>
+              <div id="battleAdviceTags" class="battle-advice-tags"></div>
+            </div>
+          </section>
+        </article>
+      </section>
+
+      <section id="dailymissions" class="page">
+        <div class="page-head"><span class="kicker">HER GÜN YENİ HEDEF</span><h2>Günlük Görevler</h2><p>Görevleri tamamla, XP ve akçe kazan, günlük serini büyüt.</p></div>
+        <article class="daily-summary glass">
+          <div><small>BUGÜN</small><b id="dailyDateLabel">—</b></div>
+          <div><small>GÜNLÜK SERİ</small><b id="dailyStreak">1 gün</b></div>
+          <div><small>BUGÜNKÜ İLERLEME</small><b id="dailyProgressText">0 / 3</b></div>
+          <div><small>KAZANILAN AKÇE</small><b id="dailyEarnedCoins">0</b></div>
+        </article>
+        <div id="dailyMissionGrid" class="daily-mission-grid"></div>
+        <article class="daily-chest glass">
+          <div class="daily-chest-visual" id="dailyChestVisual"><span>🎁</span><i></i></div>
+          <div><span class="kicker">GÜNLÜK ÖDÜL SANDIĞI</span><h3 id="dailyChestTitle">3 görevi tamamla</h3><p id="dailyChestText">Tüm görevleri tamamlayınca 250 XP ve 100 akçe kazanırsın.</p><button id="claimDailyChest" class="primary" disabled>Sandığı Aç</button></div>
+        </article>
+      </section>
+
+      <section id="mypalace" class="page">
+        <div class="page-head"><span class="kicker">KİŞİSEL OSMANLI MERKEZİN</span><h2>Sarayım</h2><p>Seviyeni, akçeni, rozetlerini ve açtığın saray odalarını burada gör.</p></div>
+        <article class="palace-hero glass">
+          <div class="palace-silhouette">
+            <div class="palace-main-dome"></div><div class="palace-small-dome d1"></div><div class="palace-small-dome d2"></div>
+            <div class="palace-tower t1"></div><div class="palace-tower t2"></div><div class="palace-gate"></div>
+          </div>
+          <div class="palace-profile">
+            <span class="kicker">SARAY SAHİBİ</span><h3 id="palaceTitle">Çaylak Tarihçi</h3>
+            <div class="palace-level-bar"><i id="palaceLevelFill"></i></div><p id="palaceLevelText">Seviye 1 • 0 XP</p>
+            <div class="palace-currency"><span>🪙 <b id="palaceCoins">0</b> Akçe</span><span>🏆 <b id="palaceBadgeCount">0</b> Rozet</span></div>
+          </div>
+        </article>
+        <section><div class="section-title"><div><span class="kicker">SARAY ODALARI</span><h2>Açılan Bölümler</h2></div></div><div id="palaceRoomGrid" class="palace-room-grid"></div></section>
+        <section class="palace-showcase-grid">
+          <article class="glass palace-showcase"><span class="kicker">ROZET VİTRİNİ</span><div id="palaceBadgeShowcase" class="palace-badge-showcase"></div></article>
+          <article class="glass palace-showcase"><span class="kicker">KİŞİSEL İSTATİSTİKLER</span><div class="palace-stat-list">
+            <div><span>Tamamlanan günlük görev</span><b id="palaceDailyTasks">0</b></div>
+            <div><span>Escape Room puanı</span><b id="palaceEscapeScore">0</b></div>
+            <div><span>Toplam analiz</span><b id="palaceAnalysisCount">0</b></div>
+            <div><span>Taktik analizi</span><b id="palaceTacticsCount">0</b></div>
+          </div></article>
+        </section>
+      </section>
+
+      <section id="aicommander" class="page">
+        <div class="page-head">
+          <span class="kicker">SEFER KARARGÂHI</span>
+          <h2>Yapay Zekâ Komutan</h2>
+          <p>Komutanından görev al, kararlarını ver, seferi tamamla ve ödüllerini kazan.</p>
+        </div>
+
+        <article class="commander-shell glass">
+          <div class="commander-header">
+            <div class="commander-portrait-wrap">
+              <div id="commanderPortrait" class="commander-portrait">
+                <div class="commander-turban">◆</div>
+                <div class="commander-face">
+                  <i class="ceye left"></i><i class="ceye right"></i><span class="commander-mouth"></span>
+                </div>
+                <div class="commander-robe">☾</div>
+              </div>
+              <span id="commanderLiveBadge" class="commander-live">● KARARGÂH AÇIK</span>
+            </div>
+
+            <div class="commander-briefing">
+              <span class="kicker">GÜNÜN SEFERİ</span>
+              <h3 id="commanderMissionTitle">Görev hazırlanıyor</h3>
+              <p id="commanderMissionBrief">Komutanlık merkezi görev bilgilerini yüklüyor.</p>
+
+              <div class="commander-meta">
+                <span id="commanderDifficulty">Zorluk: Normal</span>
+                <span id="commanderReward">Ödül: 0 XP</span>
+                <span id="commanderLocation">Konum: —</span>
+              </div>
+
+              <div class="commander-actions">
+                <button id="commanderSpeak" class="secondary">🔊 Brifingi Dinle</button>
+                <button id="commanderAccept" class="primary">⚔ Görevi Kabul Et</button>
+                <button id="commanderNewMission" class="secondary">↻ Yeni Görev</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="commander-map">
+            <div class="commander-map-grid"></div>
+            <div id="commanderRoute" class="commander-route"></div>
+            <div id="commanderTarget" class="commander-target">🏰</div>
+            <div class="commander-army army-a">⚔️</div>
+            <div class="commander-army army-b">🐎</div>
+            <div class="commander-army army-c">🏹</div>
+            <div id="commanderMapLabel" class="commander-map-label">Hedef bekleniyor</div>
+          </div>
+
+          <section id="commanderDecisionPanel" class="commander-decision-panel hidden">
+            <span class="kicker">KARAR AŞAMASI</span>
+            <h3 id="commanderQuestion"></h3>
+            <p id="commanderSituation"></p>
+            <div id="commanderOptions" class="commander-options"></div>
+            <div id="commanderFeedback" class="commander-feedback"></div>
+            <button id="commanderNextDecision" class="primary" disabled>Sonraki Karar</button>
+          </section>
+
+          <section class="commander-progress glass">
+            <div>
+              <small>SEFER İLERLEMESİ</small>
+              <div class="commander-progress-bar"><i id="commanderProgressFill"></i></div>
+              <b id="commanderProgressText">0 / 3</b>
+            </div>
+            <div><small>STRATEJİ PUANI</small><b id="commanderScore">0</b></div>
+            <div><small>ORDU MORALİ</small><b id="commanderMorale">70</b></div>
+            <div><small>İKMAL</small><b id="commanderSupply">70</b></div>
+          </section>
+
+          <article id="commanderResult" class="commander-result glass hidden">
+            <div class="commander-result-icon">🏆</div>
+            <div>
+              <span class="kicker">SEFER SONUCU</span>
+              <h3 id="commanderResultTitle"></h3>
+              <p id="commanderResultText"></p>
+              <button id="commanderClaimReward" class="primary">Ödülü Al</button>
+            </div>
+          </article>
+        </article>
+      </section>
+
+      <section id="warsimulator" class="page v22-page">
+        <div class="v22-hero glass">
+          <div><span class="kicker">V22 • STRATEJİ MERKEZİ</span><h1>Osmanlı Savaş Simülatörü</h1><p>Ordunu kur, savaş planını seç ve düşman komutanın yapay zekâ hamlelerine karşı zafer kazan.</p></div>
+          <div class="v22-seal">⚔️<small>CİHAN HÂKİMİYETİ</small></div>
+        </div>
+        <div class="v22-statbar">
+          <article><span>🏅 Komutanlık XP</span><b id="warXP">0</b></article><article><span>🪙 Savaş Hazinesi</span><b id="warGold">500</b></article><article><span>🏆 Zafer</span><b id="warWins">0</b></article><article><span>🛡️ Yenilgi</span><b id="warLosses">0</b></article>
+        </div>
+        <div class="v22-grid two">
+          <article class="glass v22-panel">
+            <div class="section-title"><div><span class="kicker">1. ADIM</span><h2>Savaş Meydanını Seç</h2></div></div>
+            <div id="battleCards" class="battle-cards"></div>
+          </article>
+          <article class="glass v22-panel">
+            <div class="section-title"><div><span class="kicker">2. ADIM</span><h2>Orduyu Hazırla</h2></div></div>
+            <div id="selectedBattleInfo" class="selected-battle-info">Bir savaş seç.</div>
+            <div id="armyControls" class="army-controls"></div>
+            <div class="army-summary"><span>Toplam asker: <b id="armyTotal">0</b></span><span>Ordu gücü: <b id="armyPower">0</b></span></div>
+          </article>
+        </div>
+        <div class="v22-grid two">
+          <article class="glass v22-panel">
+            <div class="section-title"><div><span class="kicker">3. ADIM</span><h2>Taktik ve Hazırlık</h2></div></div>
+            <label class="v22-label">Ana taktik<select id="warTactic"><option value="balanced">Dengeli Düzen</option><option value="cannon">Topçu Ateşi</option><option value="flank">Akıncı Kuşatması</option><option value="defense">Savunma Hattı</option><option value="naval">Denizden Çevirme</option></select></label>
+            <div class="weather-box"><span id="weatherIcon">☀️</span><div><small>MEYDAN HAVA DURUMU</small><b id="warWeather">Açık</b><p id="weatherEffect">Tüm birlikler normal güçte.</p></div><button id="rerollWeather" class="secondary">Havayı Yenile</button></div>
+            <button id="startBattleV22" class="primary v22-big-button">⚔️ Savaşı Başlat</button>
+          </article>
+          <article class="glass v22-panel battle-stage">
+            <div class="section-title"><div><span class="kicker">SAVAŞ RAPORU</span><h2 id="battleStageTitle">Ordu emir bekliyor</h2></div></div>
+            <div class="battle-meter"><div><span>Osmanlı</span><b id="ottomanScore">0</b></div><i><em id="battleBalance"></em></i><div><span>Düşman</span><b id="enemyScore">0</b></div></div>
+            <div id="battleLog" class="battle-log"><p>Sefer hazırlıklarını tamamla ve savaşı başlat.</p></div>
+            <div id="battleResult" class="battle-result hidden"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="imperialdivan" class="page v22-page">
+        <div class="v22-hero glass divan-hero">
+          <div><span class="kicker">V22 • DEVLET YÖNETİMİ</span><h1>Divan-ı Hümayun</h1><p>Devlet erkânını dinle, fermanını ver ve imparatorluğun geleceğini belirle.</p></div>
+          <div class="v22-seal">👑<small>DEVLET-İ ALİYYE</small></div>
+        </div>
+        <div class="divan-year-line"><button id="newDivanSession" class="secondary">Yeni Divan Toplantısı</button><h2>Hicrî Divan Yılı <b id="divanYear">1453</b></h2><span id="divanTurn">1. toplantı</span></div>
+        <div class="v22-statbar divan-stats">
+          <article><span>🪙 Hazine</span><b id="divanTreasury">1000</b></article><article><span>😊 Halk</span><b id="divanPeople">70</b></article><article><span>⚔️ Ordu</span><b id="divanArmy">65</b></article><article><span>🌾 İaşe</span><b id="divanFood">75</b></article><article><span>🌍 İtibar</span><b id="divanPrestige">60</b></article>
+        </div>
+        <div class="v22-grid divan-layout">
+          <article class="glass v22-panel">
+            <div class="section-title"><div><span class="kicker">DEVLET ERKÂNI</span><h2>Divan Üyeleri</h2></div></div>
+            <div id="divanMembers" class="divan-members"></div>
+          </article>
+          <article class="glass v22-panel divan-case-panel">
+            <div class="case-ribbon">GÜNDEM</div><span id="caseCategory" class="kicker">DEVLET MESELESİ</span><h2 id="caseTitle">Divan toplanıyor...</h2><p id="caseDescription">Yeni gündem maddesi hazırlanıyor.</p>
+            <div id="advisorOpinions" class="advisor-opinions"></div>
+            <div id="decisionOptions" class="decision-options"></div>
+          </article>
+        </div>
+        <div class="v22-grid two">
+          <article class="glass v22-panel"><div class="section-title"><div><span class="kicker">SON FERMAN</span><h2>Kararın Sonucu</h2></div></div><div id="decisionResult" class="decision-result">Henüz bir karar verilmedi.</div></article>
+          <article class="glass v22-panel"><div class="section-title"><div><span class="kicker">VAKANÜVİS KAYDI</span><h2>Divan Tarihçesi</h2></div></div><div id="divanHistory" class="divan-history"><p>İlk toplantı bekleniyor.</p></div></article>
+        </div>
+      </section>
+
+      <section id="palacewalk" class="page v23-page">
+        <div class="v23-hero glass"><div><span class="kicker">V23 • SARAY KEŞFİ</span><h1>Sarayda Serbest Gezi</h1><p>Topkapı Sarayı'nın bölümlerini keşfet, bilgi noktalarını bul ve saray rozetlerini topla.</p></div><div class="v23-seal">🏰<small>SARAY KÂŞİFİ</small></div></div>
+        <div class="v23-stats"><article><span>Keşfedilen Oda</span><b id="palaceFound">0 / 8</b></article><article><span>Keşif Puanı</span><b id="palaceScore">0</b></article><article><span>Konum</span><b id="palaceLocation">Birinci Avlu</b></article></div>
+        <div class="v23-layout">
+          <article class="glass v23-panel palace-game-wrap">
+            <div class="section-title"><div><span class="kicker">SERBEST GEZİ</span><h2>Saray Haritası</h2></div><button id="resetPalaceWalk" class="secondary">Baştan Başla</button></div>
+            <canvas id="palaceCanvas" width="960" height="560" aria-label="Sarayda serbest gezi oyunu"></canvas>
+            <div class="palace-controls"><button data-move="up">▲</button><div><button data-move="left">◀</button><button data-move="down">▼</button><button data-move="right">▶</button></div><button id="palaceInspect" class="primary">🔎 İncele</button></div>
+            <p class="v23-help">Bilgisayarda yön tuşları veya WASD; telefonda ekrandaki tuşlar. Parlayan noktalara yaklaşınca “İncele”ye bas.</p>
+          </article>
+          <aside class="glass v23-panel"><span class="kicker">SARAY REHBERİ</span><h2 id="palaceInfoTitle">Birinci Avlu</h2><div id="palaceInfoIcon" class="palace-info-icon">🌳</div><p id="palaceInfoText">Saray kapısından girdin. Parlayan tarih noktalarını bul.</p><div id="palaceDiscoveries" class="palace-discoveries"></div></aside>
+        </div>
+      </section>
+
+      <section id="weaponmuseum" class="page v23-page">
+        <div class="v23-hero glass weapon-hero"><div><span class="kicker">V23 • ASKERÎ MİRAS</span><h1>Osmanlı Silah Müzesi</h1><p>Osmanlı ordusunda kullanılan seçkin silahları incele, döndür ve özelliklerini öğren.</p></div><div class="v23-seal">🗡️<small>SİLAH USTASI</small></div></div>
+        <div class="weapon-toolbar glass"><input id="weaponSearch" placeholder="Silah ara: şahi, yatağan, yay..."><select id="weaponCategory"><option value="all">Tüm kategoriler</option><option value="melee">Yakın dövüş</option><option value="ranged">Menzilli</option><option value="siege">Kuşatma</option><option value="defense">Savunma</option></select><span>Keşif: <b id="weaponCount">0 / 10</b></span></div>
+        <div class="weapon-layout">
+          <div id="weaponGrid" class="weapon-grid"></div>
+          <article class="glass weapon-viewer"><span class="kicker">360° İNCELEME</span><h2 id="weaponTitle">Bir eser seç</h2><div id="weaponObject" class="weapon-object"><span>⚔️</span></div><input id="weaponRotate" type="range" min="-70" max="70" value="0"><p id="weaponDescription">Soldaki eserlerden birini seçerek müze incelemesini başlat.</p><div id="weaponFacts" class="weapon-facts"></div><button id="weaponFavorite" class="primary" disabled>⭐ Koleksiyona Ekle</button></article>
+        </div>
+      </section>
+
+      <section id="camerahistory" class="page">
+        <div class="section-head"><div><span class="kicker">V2.8 • GÖRSEL TARİH LABORATUVARI</span><h1>📷 Kamera ile Tarih</h1><p>Bir tarihî eser, yapı, sikke, silah veya yazma eserin fotoğrafını çek; sistem görsel ipuçlarını inceleyerek eğitimsel bir tahmin ve Osmanlı bağlantısı oluştursun.</p></div></div>
+        <div class="v28-camera-layout">
+          <article class="glass v28-panel camera-studio">
+            <div class="camera-frame" id="cameraFrame">
+              <video id="historyCamera" playsinline muted></video>
+              <img id="historyPreview" class="hidden" alt="İncelenecek görsel">
+              <canvas id="historyCanvas" class="hidden"></canvas>
+              <div id="cameraEmpty" class="camera-empty"><span>📷</span><b>Kamera veya görsel seç</b><small>JPG, PNG ve WEBP desteklenir.</small></div>
+              <div class="scan-line"></div>
+            </div>
+            <div class="v28-actions">
+              <button id="startHistoryCamera" class="primary">Kamerayı Aç</button>
+              <button id="captureHistoryPhoto" class="secondary" disabled>Fotoğraf Çek</button>
+              <label class="file-button secondary">Görsel Yükle<input id="historyImageUpload" type="file" accept="image/*" capture="environment"></label>
+              <button id="stopHistoryCamera" class="ghost" disabled>Kamerayı Kapat</button>
+            </div>
+            <label class="v28-field">Eser türü hakkında ipucu (isteğe bağlı)
+              <select id="historyObjectHint"><option value="auto">Sistem tahmin etsin</option><option value="sikke">Sikke / Para</option><option value="yapi">Mimari yapı</option><option value="silah">Silah / Zırh</option><option value="yazma">Ferman / Yazma eser</option><option value="seramik">Çini / Seramik</option><option value="tekstil">Kaftan / Tekstil</option></select>
+            </label>
+            <button id="analyzeHistoryImage" class="primary wide" disabled>🔎 Tarihî Görseli Analiz Et</button>
+            <p class="v28-note">Bu çevrimdışı sürüm, renk-doku ölçümleri ve seçilen ipucuyla eğitimsel tahmin üretir. Kesin kimlik veya uzman ekspertizi yerine geçmez.</p>
+          </article>
+          <article class="glass v28-panel analysis-panel">
+            <span class="kicker">İNCELEME SONUCU</span><div id="historyAnalysisEmpty" class="analysis-empty"><span>⌛</span><p>Bir fotoğraf seçildiğinde analiz burada görünecek.</p></div>
+            <div id="historyAnalysisResult" class="hidden">
+              <div class="analysis-title-row"><div><small>En güçlü tahmin</small><h2 id="historyPrediction">—</h2></div><div class="confidence-ring" id="historyConfidence"><b>0%</b><small>güven</small></div></div>
+              <div class="analysis-tags" id="historyTags"></div>
+              <div class="analysis-copy"><h3>Tarihî değerlendirme</h3><p id="historyDescription"></p><h3>Osmanlı bağlantısı</h3><p id="historyConnection"></p><h3>Görsel ipuçları</h3><ul id="historyClues"></ul></div>
+              <div class="v28-actions"><button id="speakHistoryResult" class="secondary">🔊 Sesli Anlat</button><button id="saveHistoryResult" class="ghost">💾 Arşive Kaydet</button></div>
+            </div>
+          </article>
+        </div>
+        <article class="glass v28-panel history-archive"><div class="panel-title-row"><div><span class="kicker">KİŞİSEL ARŞİV</span><h2>İncelenen Eserler</h2></div><button id="clearHistoryArchive" class="ghost">Arşivi Temizle</button></div><div id="historyArchiveGrid" class="history-archive-grid"></div></article>
+      </section>
+
+      <section id="cinematicai" class="page">
+        <div class="section-head"><div><span class="kicker">V2.8 • TARİHİ SAHNELE</span><h1>🎬 Yapay Zekâ Sinematik Modu</h1><p>Bir Osmanlı olayını sahnelere ayır, yönetmen notları ve anlatıcı metni oluştur, ardından sinematik oynatıcıda izle.</p></div></div>
+        <div class="v28-cinema-layout">
+          <aside class="glass v28-panel cinema-controls">
+            <h3>Sinematik Oluşturucu</h3>
+            <label class="v28-field">Tarihî olay<select id="cinemaPreset"><option value="istanbul">İstanbul'un Fethi</option><option value="mohac">Mohaç Meydan Muharebesi</option><option value="preveze">Preveze Deniz Zaferi</option><option value="ridaniye">Ridaniye Seferi</option><option value="rumeli">Rumeli Hisarı'nın İnşası</option><option value="custom">Kendi konumu yazacağım</option></select></label>
+            <label class="v28-field">Başlık<input id="cinemaTitle" maxlength="80" value="İstanbul'un Fethi"></label>
+            <label class="v28-field">Anlatım tarzı<select id="cinemaTone"><option value="epic">Destansı</option><option value="documentary">Belgesel</option><option value="mystery">Gizemli</option><option value="educational">Eğitici</option></select></label>
+            <label class="v28-field">Sahne sayısı<input id="cinemaSceneCount" type="range" min="3" max="7" value="5"><span id="cinemaSceneCountValue">5 sahne</span></label>
+            <label class="v28-field">Özel ayrıntı<textarea id="cinemaDetail" rows="3" placeholder="Örnek: Gemilerin karadan yürütülmesine ağırlık ver."></textarea></label>
+            <button id="generateCinematic" class="primary wide">✨ Sinematiği Oluştur</button>
+            <div class="cinema-settings"><label><input id="cinemaVoiceEnabled" type="checkbox" checked> Sesli anlatım</label><label><input id="cinemaAutoPlay" type="checkbox" checked> Otomatik ilerleme</label></div>
+            <div class="cinema-export-actions"><button id="copyCinemaScript" class="secondary">Metni Kopyala</button><button id="downloadCinemaScript" class="ghost">TXT İndir</button></div>
+          </aside>
+          <article class="glass cinema-player-wrap">
+            <div id="cinemaPlayer" class="cinema-player">
+              <div class="cinema-sky"></div><div class="cinema-vignette"></div><div class="cinema-grain"></div>
+              <div class="cinema-scene-symbol" id="cinemaSceneSymbol">☾</div>
+              <div class="cinema-top"><span id="cinemaSceneLabel">SAHNE 1 / 5</span><span id="cinemaCameraLabel">GENİŞ AÇI</span></div>
+              <div class="cinema-caption"><small id="cinemaYear">1453</small><h2 id="cinemaSceneTitle">Sinematik hazır değil</h2><p id="cinemaNarration">Bir konu seçip “Sinematiği Oluştur” düğmesine bas.</p><div id="cinemaDialogue" class="cinema-dialogue hidden"></div></div>
+              <div class="cinema-progress"><i id="cinemaProgress"></i></div>
+            </div>
+            <div class="cinema-player-controls"><button id="cinemaPrev" class="round">‹</button><button id="cinemaPlay" class="primary">▶ Oynat</button><button id="cinemaNext" class="round">›</button><button id="cinemaReplay" class="ghost">↻ Baştan</button></div>
+            <div id="cinemaTimeline" class="cinema-timeline"></div>
+          </article>
+        </div>
+        <article class="glass v28-panel"><span class="kicker">YÖNETMEN DEFTERİ</span><h2>Sahne Planı</h2><div id="cinemaStoryboard" class="cinema-storyboard"></div></article>
+      </section>
+
+
+      <section id="ottomanimage" class="page v29-page">
+        <div class="section-head"><div><span class="kicker">V2.9 • ÜRETKEN GÖRSEL ATÖLYESİ</span><h1>🎨 Osmanlı Yapay Zekâ Resim Üreticisi</h1><p>Yalnızca Osmanlı tarihi, kültürü, mimarisi ve gündelik hayatıyla ilgili komutlardan özgün görseller üretir.</p></div></div>
+        <div class="v29-layout">
+          <article class="glass v29-control-card">
+            <label>Görsel komutu
+              <textarea id="ottomanImagePrompt" rows="6" maxlength="900" placeholder="Örnek: 1453 sabahında İstanbul surları önünde Fatih Sultan Mehmed, sinematik tarihî tablo"></textarea>
+            </label>
+            <div class="v29-chip-row" id="ottomanImageExamples">
+              <button type="button" data-prompt="Topkapı Sarayı'nın lalelerle süslü avlusu, gün batımı, gerçekçi tarihî atmosfer">Topkapı Sarayı</button>
+              <button type="button" data-prompt="Fatih Sultan Mehmed çalışma odasında harita incelerken, sinematik ışık, tarihî gerçekçilik">Fatih'in odası</button>
+              <button type="button" data-prompt="16. yüzyıl İstanbul çarşısında gündelik hayat, kumaş dükkânları ve esnaf, ayrıntılı minyatür estetiği">Osmanlı çarşısı</button>
+            </div>
+            <label>Görsel biçimi
+              <select id="ottomanImageSize"><option value="1024x1024">Kare</option><option value="1536x1024">Yatay</option><option value="1024x1536">Dikey</option></select>
+            </label>
+            <button id="generateOttomanImage" class="primary">Görseli Üret</button>
+            <p class="v29-note">Sistem Osmanlı dışındaki komutları reddeder. API anahtarı yalnızca yerel sunucuda okunur.</p>
+          </article>
+          <article class="glass v29-result-card">
+            <div id="ottomanImageEmpty" class="v29-empty"><span>🎨</span><b>Henüz görsel üretilmedi</b><small>Soldaki alana bir Osmanlı sahnesi yaz.</small></div>
+            <div id="ottomanImageLoading" class="v29-loading hidden"><i></i><b>Nakkaşlar çalışıyor...</b><small>Görsel hazırlanıyor.</small></div>
+            <img id="ottomanGeneratedImage" class="hidden" alt="Yapay zekâ tarafından üretilen Osmanlı temalı görsel">
+            <div id="ottomanImageActions" class="v29-actions hidden"><button id="downloadOttomanImage" class="secondary">Görseli Kaydet</button><button id="regenerateOttomanImage" class="ghost">Yeniden Üret</button></div>
+            <p id="ottomanImageStatus" class="v29-status"></p>
+          </article>
+        </div>
+      </section>
+
+      <section id="ottomannews" class="page v29-page">
+        <div class="section-head"><div><span class="kicker">V2.9 • VAKANÜVİS HABERHÂNESİ</span><h1>📰 Güncel Haberleri Osmanlı Üslubuyla Yorumla</h1><p>Başlık ve haber metnini gir; yapay zekâ haberi anlaşılır Osmanlı Türkçesi üslubuyla yeniden anlatsın ve kısa bir vakanüvis yorumu eklesin.</p></div></div>
+        <div class="v29-layout">
+          <article class="glass v29-control-card">
+            <label>Haber başlığı<input id="ottomanNewsTitle" maxlength="220" placeholder="Haberin başlığını yaz"></label>
+            <label>Haber metni<textarea id="ottomanNewsBody" rows="10" maxlength="7000" placeholder="Güncel haber metnini buraya yapıştır"></textarea></label>
+            <label>Üslup seviyesi<select id="ottomanNewsLevel"><option value="sade">Sade ve anlaşılır</option><option value="orta" selected>Orta derecede Osmanlıca</option><option value="agir">Ağır divan üslubu</option></select></label>
+            <button id="interpretOttomanNews" class="primary">Haberi Yorumla</button>
+            <p class="v29-note">Sonuç tarihî bir dil dönüşümüdür; haberin doğruluğunu ayrıca güvenilir kaynaklardan kontrol et.</p>
+          </article>
+          <article class="glass v29-result-card v29-news-result">
+            <div id="ottomanNewsEmpty" class="v29-empty"><span>📜</span><b>Vakanüvis kalemi hazır</b><small>Bir haber başlığı ve metni gir.</small></div>
+            <div id="ottomanNewsLoading" class="v29-loading hidden"><i></i><b>Haber kaleme alınıyor...</b></div>
+            <div id="ottomanNewsOutput" class="hidden">
+              <span class="kicker">OSMANLI ÜSLUBUYLA HABER</span><h2 id="ottomanNewsOutputTitle"></h2>
+              <div id="ottomanNewsOutputText" class="v29-parchment"></div>
+              <div class="v29-actions"><button id="copyOttomanNews" class="secondary">Metni Kopyala</button><button id="speakOttomanNews" class="ghost">Sesli Oku</button></div>
+            </div>
+            <p id="ottomanNewsStatus" class="v29-status"></p>
+          </article>
+        </div>
+      </section>
+      <section id="infinityhub" class="page nexus-page">
+        <div class="nexus-hero glass">
+          <div>
+            <span class="kicker">V31 • SONSUZ × SINIRSIZ × LİMİTSİZ</span>
+            <h1>♾️ Osmanlı AI Infinity Nexus</h1>
+            <p>Tarih, zekâ ve zaman tek merkezde birleşiyor. Uzman divanını çağır, bir yılı keşfet veya mevcut Osmanlı AI modüllerine ışınlan.</p>
+            <div class="nexus-hero-actions">
+              <button class="primary" data-nexus-open="infinitybrain">🧠 Infinity Brain</button>
+              <button class="secondary" data-nexus-open="infinitytimeline">⏳ Infinity Timeline</button>
+            </div>
+          </div>
+          <div class="nexus-orbit" aria-hidden="true"><i></i><i></i><i></i><b>♾️</b></div>
+        </div>
+        <div class="nexus-grid">
+          <article class="nexus-card glass" data-nexus-open="infinitybrain"><span>🧠</span><h2>Infinity Brain</h2><p>Altı uzman yapay zekâ ajanından konuya göre hazırlanmış açıklamalar al.</p><button class="primary">Divanı Aç</button></article>
+          <article class="nexus-card glass" data-nexus-open="infinitytimeline"><span>⏳</span><h2>Infinity Timeline</h2><p>1299–1922 arasında yılı değiştir; padişahı, dönemi ve önemli gelişmeleri anında gör.</p><button class="primary">Zamanı Aç</button></article>
+          <article class="nexus-card glass" data-nexus-open="ottomanimage"><span>🎨</span><h2>Osmanlı Resim AI</h2><p>Osmanlı tarihine ait sahneleri metin komutuyla görselleştir.</p><button class="secondary">Üreticiye Git</button></article>
+          <article class="nexus-card glass" data-nexus-open="ottomannews"><span>📰</span><h2>Osmanlıca Haber</h2><p>Güncel metinleri tarihî Osmanlı üslubuyla yeniden yorumla.</p><button class="secondary">Habere Git</button></article>
+          <article class="nexus-card glass" data-nexus-open="historyanalysis"><span>📜</span><h2>Tarih Analizi</h2><p>Olayların sebeplerini, sonuçlarını ve tarihî önemini incele.</p><button class="secondary">Analizi Aç</button></article>
+          <article class="nexus-card glass" data-nexus-open="warsimulator"><span>⚔️</span><h2>Savaş Simülatörü</h2><p>Ordunu kur, taktiğini seç ve meydandaki sonucu hesapla.</p><button class="secondary">Meydanı Aç</button></article>
+        </div>
+      </section>
+
+      <section id="infinitybrain" class="page nexus-page">
+        <div class="page-head"><span class="kicker">INFINITY NEXUS • UZMANLAR DİVANI</span><h2>🧠 Infinity Brain</h2><p>Uzmanı seç, sorununu yaz. Sistem konuya uygun, güvenli ve anlaşılır bir tarih açıklaması hazırlasın.</p></div>
+        <div class="brain-layout">
+          <article class="glass brain-control">
+            <div id="brainExperts" class="brain-experts">
+              <button class="active" data-expert="danisman">👑 Padişah Danışmanı</button>
+              <button data-expert="tarihci">📜 Tarihçi</button>
+              <button data-expert="stratejist">⚔️ Stratejist</button>
+              <button data-expert="osmanlica">🕌 Osmanlıca Uzmanı</button>
+              <button data-expert="sanatci">🎨 Sanatçı</button>
+              <button data-expert="mimar">🏛️ Mimarlık Uzmanı</button>
+            </div>
+            <label>Sorun veya konu<textarea id="brainQuestion" rows="6" placeholder="Örnek: İstanbul'un fethinin dünya tarihi açısından önemi nedir?"></textarea></label>
+            <div class="brain-samples"><button data-brain-q="İstanbul'un fethinin nedenlerini ve sonuçlarını anlat.">1453</button><button data-brain-q="Kanuni döneminin güçlü yönlerini açıkla.">Kanuni</button><button data-brain-q="Osmanlı mimarisinin temel özellikleri nelerdir?">Mimari</button></div>
+            <button id="brainAsk" class="primary">♾️ Divana Sor</button>
+          </article>
+          <article class="glass brain-answer"><div class="brain-answer-head"><span id="brainExpertIcon">👑</span><div><small>SEÇİLİ UZMAN</small><h3 id="brainExpertName">Padişah Danışmanı</h3></div></div><div id="brainResult" class="brain-result"><p>Bir uzman seçip sorunu yaz. Infinity Brain cevabı burada gösterecek.</p></div><div class="brain-actions"><button id="brainCopy" class="secondary">Kopyala</button><button id="brainSpeak" class="secondary">Sesli Oku</button></div></article>
+        </div>
+      </section>
+
+      <section id="infinitytimeline" class="page nexus-page">
+        <div class="page-head"><span class="kicker">INFINITY NEXUS • 1299–1922</span><h2>⏳ Infinity Timeline</h2><p>Zaman sürgüsünü hareket ettir; devletin dönemini, hükümdarını ve o yıllara yakın önemli gelişmeleri keşfet.</p></div>
+        <article class="glass infinity-time-stage">
+          <div class="time-year"><small>SEÇİLEN YIL</small><b id="infinityYearLabel">1453</b></div>
+          <input id="infinityYear" type="range" min="1299" max="1922" value="1453" step="1">
+          <div class="time-buttons"><button id="timePrev" class="secondary">← 10 yıl</button><button id="timePlay" class="primary">▶ Zamanı Oynat</button><button id="timeNext" class="secondary">10 yıl →</button></div>
+          <div class="timeline-meter"><i id="timelineMeterFill"></i></div>
+        </article>
+        <div class="timeline-cards">
+          <article class="glass"><small>DÖNEM</small><h3 id="infinityEra">Yükseliş Dönemi</h3><p id="infinityEraText"></p></article>
+          <article class="glass"><small>TAHTTAKİ PADİŞAH</small><h3 id="infinitySultan">Fatih Sultan Mehmed</h3><p id="infinitySultanText"></p></article>
+          <article class="glass timeline-event-card"><small>YAKIN TARİHÎ GELİŞME</small><h3 id="infinityEventTitle">İstanbul'un Fethi</h3><p id="infinityEventText"></p></article>
+        </div>
+        <div class="timeline-world-grid">
+          <article class="glass infinity-map-card">
+            <div class="map-card-head"><div><small>SEÇİLEN YILA GÖRE</small><h3>Osmanlı Etki Haritası</h3></div><b id="timelineMapYear">1453</b></div>
+            <div id="infinityMap" class="infinity-map era-map-rise" aria-label="Temsili Osmanlı etki haritası">
+              <div id="mapEmpireGlow" class="map-empire-glow"></div>
+              <span class="map-land land-anatolia"></span><span class="map-land land-balkans"></span><span class="map-land land-levant"></span><span class="map-land land-egypt"></span><span class="map-land land-maghreb"></span>
+              <button class="map-city city-bursa" data-city="Bursa" data-from="1326">Bursa</button>
+              <button class="map-city city-edirne" data-city="Edirne" data-from="1362">Edirne</button>
+              <button class="map-city city-istanbul" data-city="İstanbul" data-from="1453">İstanbul</button>
+              <button class="map-city city-kahire" data-city="Kahire" data-from="1517">Kahire</button>
+              <button class="map-city city-bagdat" data-city="Bağdat" data-from="1534">Bağdat</button>
+              <button class="map-city city-budin" data-city="Budin" data-from="1541">Budin</button>
+              <div id="mapCityInfo" class="map-city-info">1453 yılında etkin merkezler gösteriliyor.</div>
+            </div>
+          </article>
+          <article class="glass state-panel">
+            <small>DEVLET DURUMU • TEMSİLÎ ENDEKS</small><h3 id="stateHeadline">Güçlenen imparatorluk düzeni</h3>
+            <div class="state-metric"><span>Askerî güç <b id="stateMilitaryValue">78</b></span><i><em id="stateMilitary"></em></i></div>
+            <div class="state-metric"><span>Ekonomi <b id="stateEconomyValue">72</b></span><i><em id="stateEconomy"></em></i></div>
+            <div class="state-metric"><span>Diplomasi <b id="stateDiplomacyValue">70</b></span><i><em id="stateDiplomacy"></em></i></div>
+            <div class="state-metric"><span>Bilim ve kültür <b id="stateCultureValue">75</b></span><i><em id="stateCulture"></em></i></div>
+            <p id="stateSummary">Değerler tarih öğretimini kolaylaştırmak için hazırlanmış temsili göstergelerdir.</p>
+          </article>
+        </div>
+      </section>
+
+</main>
+  </div>
+
+  <dialog id="searchDialog">
+    <form method="dialog" class="dialog-box glass">
+      <div class="dialog-head"><div><span class="kicker">AKILLI ARAMA</span><h3>Her yerde ara</h3></div><button class="round">×</button></div>
+      <input id="globalSearch" autofocus placeholder="Padişah, savaş, dönem, reform...">
+      <div id="globalResults"></div>
+    </form>
+  </dialog>
+
+  <div id="juryOverlay" class="jury-overlay hidden">
+    <div class="jury-demo-card glass">
+      <div class="jury-demo-top"><span id="juryOverlayLabel">✨ EN İLGİ ÇEKİCİ ÖZELLİKLER</span><button id="stopJuryMode" class="round">×</button></div>
+      <h2 id="juryDemoTitle">Osmanlı AI tanıtılıyor</h2>
+      <p id="juryDemoText"></p>
+      <div class="jury-demo-progress"><i id="juryDemoFill"></i></div>
+      <small id="juryDemoCounter"></small>
+    </div>
+  </div>
+
+  <div id="revealOverlay" class="reveal-overlay hidden">
+    <div class="reveal-core">
+      <span class="kicker">KİMLİK BELİRLENDİ</span>
+      <h2 id="revealName">—</h2>
+      <p id="revealConfidence">—</p>
+    </div>
+  </div>
+  <audio id="mehterAudio" src="/assets/ceddin-deden.mp3?v=21" loop preload="auto" playsinline>
+  <source src="/assets/ceddin-deden.mp3?v=21" type="audio/mpeg">
+</audio>
+<button id="aiAvatarButton" class="ai-avatar-button" title="Osmanlı AI Danışmanı">
+    <span class="ai-avatar-mini">
+      <i class="mini-turban">◆</i>
+      <i class="mini-head"><b></b><b></b><em></em></i>
+      <i class="mini-robe">☾</i>
+    </span>
+    <span class="ai-avatar-pulse"></span>
+  </button>
+
+  <aside id="aiAvatarPanel" class="ai-avatar-panel glass hidden">
+    <div class="ai-avatar-header">
+      <div>
+        <span class="kicker">OSMANLI AI DANIŞMANI</span>
+        <h3 id="aiAvatarTitle">Saray Rehberi</h3>
+      </div>
+      <button id="closeAiAvatar" class="round">×</button>
+    </div>
+
+    <div class="ai-avatar-character-wrap">
+      <div id="aiAvatarCharacter" class="ai-avatar-character">
+        <div class="advisor-turban">◆</div>
+        <div class="advisor-face"><span class="advisor-eye left"></span><span class="advisor-eye right"></span><span class="advisor-mouth"></span></div>
+        <div class="advisor-robe">☾</div>
+      </div>
+      <div id="aiAvatarStatus" class="ai-avatar-status">Hazır</div>
+    </div>
+
+    <div id="aiAvatarMessages" class="ai-avatar-messages">
+      <div class="avatar-message ai">Hoş geldin! Uygulamada yol gösterebilir, tarih sorularını cevaplayabilir ve seni doğru bölüme yönlendirebilirim.</div>
+    </div>
+
+    <div class="ai-avatar-quick">
+      <button data-avatar-action="guide">Bana yolu göster</button>
+      <button data-avatar-action="daily">Bugünün bilgisini söyle</button>
+      <button data-avatar-action="quiz">Bana soru sor</button>
+      <button data-avatar-action="random">Bir padişah öner</button>
+    </div>
+
+    <div class="ai-avatar-input-row">
+      <input id="aiAvatarInput" placeholder="Örnek: Fatih hakkında bilgi ver">
+      <button id="aiAvatarSend" class="primary">Sor</button>
+    </div>
+    <label class="audio-toggle ai-avatar-voice-toggle"><input id="aiAvatarVoice" type="checkbox" checked><span>Sesli cevapla</span></label>
+  </aside>
+
+  <button id="audioSettingsButton" class="audio-settings-button" title="Ses ayarları">🔊</button>
+<aside id="audioSettingsPanel" class="audio-settings-panel glass hidden"><div class="audio-settings-head"><b>Ses Ayarları</b><button id="closeAudioSettings" class="round">×</button></div><label class="audio-toggle"><input id="musicEnabled" type="checkbox" checked><span>Mehter fon müziği</span></label><label>Fon müziği
+      <select id="musicTrackSelect">
+        <option value="original">Mehter Esintisi (dahil)</option>
+        <option value="ceddin">Ceddin Deden</option>
+      </select>
+    </label>
+    <div id="ceddinStatus" class="ceddin-status">Ceddin Deden için `public/assets/ceddin-deden.mp3` dosyası gerekir.</div>
+    <label>Fon müziği sesi <b id="musicVolumeValue">%35</b><input id="musicVolume" type="range" min="0" max="100" value="35"></label><label class="audio-toggle"><input id="gameAudioEnabled" type="checkbox" checked><span>Oyunlarda müzik</span></label><label class="audio-toggle"><input id="narrationEnabled" type="checkbox" checked><span>Sesli anlatım</span></label><button id="audioTestButton" class="secondary">▶ Müziği Başlat / Dene</button><small>Tarayıcı ilk tıklamadan önce otomatik sesi engelleyebilir. Uygulamada herhangi bir yere tıklayınca müzik başlar.</small></aside>
+<div id="timegateOverlay" class="timegate-overlay hidden">
+    <div class="timegate-overlay-ring"></div><h2 id="timegateOverlayYear">1453</h2><p id="timegateOverlayText">Zaman kapısı açılıyor...</p>
+  </div>
+  <div id="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+  <script src="/data.js?v=23"></script>
+  <script src="/script.js?v=32-english-translation-fix"></script>
+<script>
+  (function(){
+    function closeImperialIntro(){
+      var intro=document.getElementById("imperialIntro");
+      if(!intro)return;
+      intro.classList.add("hidden-intro");
+      intro.style.pointerEvents="none";
+      setTimeout(function(){intro.style.display="none";},850);
+      try{localStorage.setItem("oa_intro_seen","1");}catch(e){}
+    }
+    window.closeImperialIntro=closeImperialIntro;
+    document.addEventListener("DOMContentLoaded",function(){
+      var button=document.getElementById("enterImperialApp");
+      if(button){
+        button.addEventListener("click",closeImperialIntro);
+        button.addEventListener("touchend",closeImperialIntro,{passive:true});
+      }
+      try{
+        if(localStorage.getItem("oa_intro_seen")==="1"){
+          var intro=document.getElementById("imperialIntro");
+          if(intro)intro.style.display="none";
+        }
+      }catch(e){}
+    });
+  })();
+</script>
+
+
+
+
+
+
+  <link rel="stylesheet" href="/v22.css?v=22">
+  <link rel="stylesheet" href="/v23.css?v=26-character-ranks">
+  <script src="/v22.js?v=23-error-fix"></script>
+  <script src="/v23.js?v=24-ai-fix"></script>
+  <script src="/system-update.js?v=29-3-silent"></script>
+
+<div id="characterCreatorModal" class="character-modal hidden">
+  <form id="characterCreatorForm" class="character-dialog glass">
+    <button id="closeCharacterCreator" class="character-close" type="button">×</button>
+    <span class="kicker">ZAMAN YOLCUSU</span><h2>Karakter Oluştur</h2>
+    <label>Karakter adı<input name="name" maxlength="24" required placeholder="Örnek: Akıncı Mehmed"></label>
+    <label>Meslek<select name="role"><option>Yeniçeri</option><option selected>Akıncı</option><option>Sipahi</option><option>Levent</option><option>Kâtip</option><option>Medrese Talebesi</option><option>Ulak</option></select></label>
+    <label>Başlangıç şehri<select name="city"><option>İstanbul</option><option>Bursa</option><option>Edirne</option><option>Amasya</option><option>Konya</option><option>Trabzon</option></select></label>
+    <label>Karakter simgesi<select name="icon"><option>🧑🏻</option><option>👳🏻</option><option>🧔🏻</option><option>👩🏻</option><option>🧕🏻</option></select></label>
+    <button class="primary" type="submit">Karakteri Kaydet</button>
+  </form>
+</div>
+  <link rel="stylesheet" href="/v27.css?v=27">
+  <link rel="stylesheet" href="/v28.css?v=28">
+  <link rel="stylesheet" href="/v29.css?v=29">
+  <link rel="stylesheet" href="/v30.css?v=31-infinity">
+  <link rel="stylesheet" href="/mobile.css?v=31-mobile-1">
+  <script src="/palace-chat.js?v=26"></script>
+  <script src="/v27.js?v=27"></script>
+  <script src="/v28.js?v=28"></script>
+  <script src="/v29.js?v=29-3-stable"></script>
+  <script src="/v30.js?v=31-infinity"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+Kullanım hakkına sahip olduğunuz Ceddin Deden ses kaydını:
+
+ceddin-deden.mp3
+
+adıyla bu klasöre koyun.
+
+Tam yol:
+public/assets/ceddin-deden.mp3
+
+Daha sonra uygulamada:
+Ses Ayarları > Fon müziği > Ceddin Deden
+
+seçeneğini kullanın.

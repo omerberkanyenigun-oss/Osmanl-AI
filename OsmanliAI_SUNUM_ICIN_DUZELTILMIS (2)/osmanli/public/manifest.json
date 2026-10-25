@@ -1,0 +1,11 @@
+{
+  "name": "Osmanlı AI ULTIMATE",
+  "short_name": "Osmanlı AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060912",
+  "theme_color": "#070b14",
+  "icons": [
+    {"src": "/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

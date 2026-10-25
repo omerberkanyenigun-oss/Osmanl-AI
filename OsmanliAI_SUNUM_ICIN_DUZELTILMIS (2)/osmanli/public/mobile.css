@@ -1,0 +1,109 @@
+/* Osmanli AI V31 — responsive layout overrides. Presentation only; no features or logic removed. */
+*,*::before,*::after{box-sizing:border-box}
+html{width:100%;max-width:100%;overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:90px}
+body{width:100%;max-width:100%;overflow-x:clip}
+img,video,canvas,svg,iframe{max-width:100%}
+input,select,textarea,button{max-width:100%;touch-action:manipulation}
+input,select,textarea{min-width:0}
+button,a,[role=button]{-webkit-tap-highlight-color:transparent}
+.app-shell,.main,.page,.glass,.hero,.section-block{min-width:0;max-width:100%}
+.app-shell{grid-template-columns:225px minmax(0,1fr)}
+.sidebar{min-width:0}
+.page img,.page video{height:auto;max-width:100%}
+pre,code,.tree-viewport,.table-wrap,.compare-table-wrap{max-width:100%;overflow:auto}
+table{max-width:100%}
+@media(max-width:1050px){
+  .app-shell{grid-template-columns:minmax(0,1fr);gap:14px;padding:14px}
+  .sidebar{position:sticky;top:0;z-index:100;height:auto;max-height:none;min-width:0;display:block;padding:10px;border-radius:16px;background:rgba(8,14,27,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);overflow:visible}
+  .sidebar nav{display:flex;flex-flow:row nowrap;align-items:stretch;gap:7px;overflow-x:auto;overflow-y:hidden;max-width:100%;padding:0 0 7px;scrollbar-width:thin;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  .sidebar nav .nav{flex:0 0 auto;width:auto;min-height:42px;padding:10px 12px;gap:7px;white-space:nowrap;font-size:12px;transform:none}
+  .sidebar nav .nav span{display:inline!important;font-size:12px}
+  .sidebar nav .nav b{flex:0 0 auto}
+  .sidebar .model-status{margin:5px 0 0;min-width:0;width:100%;padding:8px 10px;gap:8px}
+  .model-status-copy{min-width:0}
+  .model-status-copy small{font-size:10px;overflow-wrap:anywhere}
+  .model-load-progress{margin-top:5px}
+  .app-shell>.main{width:100%;min-width:0}
+  .hero{grid-template-columns:minmax(0,1fr);padding:clamp(22px,4vw,42px)}
+  .hero-emblem{display:none}
+}
+@media(max-width:700px){
+  .topbar{height:auto;min-height:62px;gap:8px;padding:9px 12px;flex-wrap:wrap}
+  .brand{gap:8px;min-width:0;flex:1}
+  .brand-seal{width:38px;height:38px;flex:0 0 38px;font-size:20px;border-radius:12px}
+  .brand b{font-size:12px;letter-spacing:.04em;overflow-wrap:anywhere}
+  .brand small{font-size:9px}
+  .top-actions{gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .top-actions button{padding:9px 10px}
+  .app-shell{padding:9px;gap:11px}
+  .sidebar{padding:8px;border-radius:14px}
+  .sidebar nav .nav{min-height:40px;padding:9px 10px;border-radius:10px;font-size:11px}
+  .sidebar nav .nav span{font-size:11px}
+  .hero{min-height:0;padding:23px 18px;border-radius:20px}
+  .hero h1{font-size:clamp(34px,9vw,48px);overflow-wrap:anywhere}
+  .hero p{font-size:14px;line-height:1.65}
+  .hero-actions,.preview-actions,.profile-actions,.commander-actions,.treasury-actions,.radio-actions{flex-wrap:wrap}
+  .hero-actions>*{flex:1 1 140px}
+  .stats,.stats-dashboard,.v22-statbar,.achievement-stats,.map-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dashboard-grid,.profile-sections,.recognition-grid,.battle-layout,.battle-analysis-panel,.map-main-layout,.treasury-layout,.palace-layout,.career-card,.radio-console,.v22-grid.two{grid-template-columns:minmax(0,1fr)}
+  .profile-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .page-head{padding:22px 3px 15px}
+  .page-head h2,.section-title h2{font-size:clamp(28px,7vw,38px);overflow-wrap:anywhere}
+  .page-head p{font-size:14px}
+  .upload-panel,.result-panel,.profile-view,.tree-card,.compare-lab,.quiz-card,.v22-panel,.palace-info,.ferman-card,.story-card{padding:15px;border-radius:17px}
+  .drop-zone{min-height:300px;padding:16px}
+  .drop-zone h3{font-size:21px}
+  .preview-box img{height:auto;max-height:55vh;min-height:180px}
+  .result-top{align-items:flex-start;flex-wrap:wrap}
+  .profile-hero{flex-direction:column;gap:12px}
+  .profile-hero h2{font-size:30px;overflow-wrap:anywhere}
+  .compare-controls,.search-bar,.ferman-controls,.advisor-input{grid-template-columns:minmax(0,1fr);gap:9px}
+  .compare-table{display:block;overflow-x:auto;white-space:normal}
+  .memory-board{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dashboard-game-grid,.gallery-grid,.achievement-grid,.card-grid,.glossary-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+  .tree-viewport{min-height:380px;overflow:auto;touch-action:pan-x pan-y}
+  .ottoman-map-canvas{min-height:420px}
+  .map-stats-grid{gap:8px}
+  .siege-topbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .siege-world{min-height:440px}
+  .battle-board{min-height:360px}
+  .escape-topbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .escape-scene{min-height:520px}
+  .timegate-door{height:340px}
+  .living-stage{min-height:330px}
+  .palace-map{min-height:430px}
+  .palace-room{max-width:45%;padding:8px;font-size:11px;overflow-wrap:anywhere}
+  .ferman-paper{padding:20px 14px;font-size:15px;overflow-wrap:anywhere}
+  .ferman-paper h2{font-size:24px}
+  .ferman-paper .tughra{font-size:40px}
+  .radio-program{padding:17px}
+  .radio-program h3{font-size:25px}
+  .radio-wood{padding:13px}
+  .radio-display{padding:14px}
+  .radio-display h3{font-size:27px;overflow-wrap:anywhere}
+  .modal,.dialog-box,.character-dialog,.system-update-card{width:min(100%,calc(100vw - 24px));max-width:calc(100vw - 24px);padding:17px}
+  dialog{width:calc(100vw - 20px);max-width:calc(100vw - 20px)}
+  .system-update-card h2{font-size:25px}
+  .intro-content h1,.cinematic-intro h1{font-size:clamp(35px,10vw,54px)}
+  .intro-content p,.cinematic-intro p{letter-spacing:.12em;font-size:12px;padding:0 16px}
+  .intro-emblem-wrap{width:min(190px,55vw)}
+  .intro-enter{max-width:calc(100vw - 40px);white-space:normal}
+  #toast{left:10px;right:10px;bottom:10px;width:auto;max-width:none}
+  .ai-avatar-button,.audio-settings-button{right:12px;bottom:12px}
+  .ai-avatar-panel,.audio-settings-panel{right:10px!important;left:10px!important;bottom:74px!important;width:auto!important;max-width:none!important;max-height:70dvh;overflow:auto}
+  .audio-settings-panel{bottom:74px!important}
+  .model-status-copy small,.notice,.feature p,.gallery-item p{overflow-wrap:anywhere}
+}
+@media(max-width:380px){
+  .app-shell{padding:6px}
+  .topbar{padding:8px}
+  .brand small{display:none}
+  .top-actions .primary,.top-actions .secondary{padding:8px;font-size:11px}
+  .stats,.stats-dashboard,.v22-statbar,.achievement-stats,.map-stats-grid,.siege-topbar,.escape-topbar{grid-template-columns:minmax(0,1fr)}
+  .profile-facts{grid-template-columns:minmax(0,1fr)}
+  .hero h1{font-size:34px}
+  .page-head h2,.section-title h2{font-size:27px}
+  .sidebar nav .nav{padding:8px;font-size:10px}
+  .sidebar nav .nav span{font-size:10px}
+}
+@media(hover:none){.nav:hover,.sultan-card:hover,.dashboard-game-card:hover,.gallery-item:hover{transform:none}}
